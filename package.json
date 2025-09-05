@@ -1,0 +1,31 @@
+{
+  "name": "pageant-tabulation",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "autoprefixer": "^10.4.0",
+    "next": "^14.0.0",
+    "postcss": "^8.4.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "pageant",
+    "tabulation",
+    "nextjs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "Pageant Tabulation System for School College"
+}
