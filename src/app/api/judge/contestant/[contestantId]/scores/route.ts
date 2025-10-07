@@ -10,7 +10,8 @@ export async function POST(
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session || session.user?.role !== 'JUDGE') {
+    const userRole = (session?.user as any)?.role;
+    if (!session || userRole !== 'Judge') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -24,7 +25,7 @@ export async function POST(
     // Find the judge profile for this user
     const judge = await prisma.judge.findFirst({
       where: {
-        userId: session.user.id,
+        userId: (session?.user as any)?.id,
         pageantEvent: {
           isActive: true,
         },
@@ -56,7 +57,7 @@ export async function POST(
 
     // Validate scores
     for (const [categoryId, score] of Object.entries(scores)) {
-      const category = categories.find(c => c.id === categoryId);
+      const category = categories.find((c: any) => c.id === categoryId);
       if (!category) {
         return NextResponse.json({ error: `Invalid category: ${categoryId}` }, { status: 400 });
       }
@@ -70,7 +71,7 @@ export async function POST(
     }
 
     // Use transaction to update/create scores
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Delete existing scores for this judge and contestant
       await tx.score.deleteMany({
         where: {

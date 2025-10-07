@@ -1,5 +1,5 @@
 interface Ranking {
-  contestantId: number;
+  contestantId: string;
   score: number;
   contestant: any;
   rank: number;

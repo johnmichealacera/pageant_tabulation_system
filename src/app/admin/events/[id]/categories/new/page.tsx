@@ -16,8 +16,11 @@ export default function NewCategory({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (status === 'loading') return;
-    
-    if (!session || session.user?.role !== 'ADMIN') {
+
+    // Check for admin role using a custom property on session.user
+    // Since the default Session type does not include 'role', we cast user to any
+    const userRole = (session?.user as any)?.role;
+    if (!session || userRole !== 'ADMIN') {
       router.push('/auth/signin');
       return;
     }

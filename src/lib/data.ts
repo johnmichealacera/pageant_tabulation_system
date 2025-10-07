@@ -4,7 +4,7 @@ export interface Contestant {
   age: number;
   course: string;
   year: string;
-  photo: string;
+  photo?: string;
 }
 
 export interface Category {

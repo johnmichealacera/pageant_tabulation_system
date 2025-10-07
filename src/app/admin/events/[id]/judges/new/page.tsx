@@ -19,7 +19,8 @@ export default function NewJudge({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (status === 'loading') return;
     
-    if (!session || session.user?.role !== 'ADMIN') {
+    const userRole = (session?.user as any)?.role;
+    if (!session || userRole !== 'ADMIN') {
       router.push('/auth/signin');
       return;
     }

@@ -28,7 +28,8 @@ export default function SignIn() {
       } else {
         // Get the session to check user role
         const session = await getSession();
-        if (session?.user?.role === 'ADMIN') {
+        const userRole = (session?.user as any)?.role;
+        if (userRole === 'ADMIN') {
           router.push('/admin');
         } else {
           router.push('/judge');

@@ -38,7 +38,8 @@ export default function ScoreContestant({ params }: { params: { contestantId: st
   useEffect(() => {
     if (status === 'loading') return;
     
-    if (!session || session.user?.role !== 'JUDGE') {
+    const userRole = (session?.user as any)?.role;
+    if (!session || userRole !== 'Judge') {
       router.push('/auth/signin');
       return;
     }

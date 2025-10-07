@@ -10,14 +10,16 @@ export async function GET(
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session || session.user?.role !== 'JUDGE') {
+    const userRole = (session?.user as any)?.role;
+    const userId = (session?.user as any)?.id;
+    if (!session || userRole !== 'Judge') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Find the judge profile for this user
     const judge = await prisma.judge.findFirst({
       where: {
-        userId: session.user.id,
+        userId,
         pageantEvent: {
           isActive: true,
         },
