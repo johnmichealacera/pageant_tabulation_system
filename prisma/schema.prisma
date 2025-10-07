@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String?
+  role          UserRole  @default(JUDGE)
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Judge specific fields
+  judgeProfile  Judge?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum UserRole {
+  ADMIN
+  JUDGE
+}
+
+model PageantEvent {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  eventDate   DateTime
+  isActive    Boolean  @default(false)
+  
+  contestants Contestant[]
+  judges      Judge[]
+  categories  Category[]
+  scores      Score[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contestant {
+  id       String @id @default(cuid())
+  name     String
+  age      Int
+  course   String
+  year     String
+  photo    String?
+  
+  pageantEventId String
+  pageantEvent   PageantEvent @relation(fields: [pageantEventId], references: [id], onDelete: Cascade)
+  
+  scores Score[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Judge {
+  id   String @id @default(cuid())
+  name String
+  role String
+  
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
+  
+  pageantEventId String
+  pageantEvent   PageantEvent @relation(fields: [pageantEventId], references: [id], onDelete: Cascade)
+  
+  scores Score[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id       String @id @default(cuid())
+  name     String
+  maxScore Int
+  weight   Float
+  
+  pageantEventId String
+  pageantEvent   PageantEvent @relation(fields: [pageantEventId], references: [id], onDelete: Cascade)
+  
+  scores Score[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Score {
+  id    String @id @default(cuid())
+  score Int
+  
+  contestantId String
+  contestant   Contestant @relation(fields: [contestantId], references: [id], onDelete: Cascade)
+  
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  judgeId String
+  judge   Judge @relation(fields: [judgeId], references: [id], onDelete: Cascade)
+  
+  pageantEventId String
+  pageantEvent   PageantEvent @relation(fields: [pageantEventId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([contestantId, categoryId, judgeId])
+}

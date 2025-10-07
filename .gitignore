@@ -158,3 +158,5 @@ temp/
 # Local configuration files
 config.local.js
 config.local.json
+
+/generated/prisma
