@@ -61,8 +61,8 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        (session.user as any).id = (token as any).sub!
-        (session.user as any).role = token.role as string
+        session.user.id = token.sub as string
+        session.user.role = token.role as string
       }
       return session
     }
@@ -75,6 +75,15 @@ export const authOptions: NextAuthOptions = {
 declare module "next-auth" {
   interface User {
     role: string
+  }
+  interface Session {
+    user: {
+      id: string
+      name?: string | null
+      email?: string | null
+      image?: string | null
+      role: string
+    }
   }
 }
 
