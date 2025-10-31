@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#bgGradient)"/>
+  
+  <!-- Crown shape - more elegant and clear -->
+  <path d="M50 15 L20 55 L35 55 L30 75 L70 75 L65 55 L80 55 Z" 
+        fill="#FCD34D" stroke="#FFF" stroke-width="2.5"/>
+  
+  <!-- Center gem -->
+  <circle cx="50" cy="45" r="6" fill="#FFF"/>
+  <circle cx="50" cy="45" r="4" fill="#FCD34D"/>
+  
+  <!-- Side gems -->
+  <circle cx="40" cy="52" r="4" fill="#FFF"/>
+  <circle cx="60" cy="52" r="4" fill="#FFF"/>
+  
+  <!-- Base/stripes -->
+  <rect x="30" y="75" width="40" height="8" fill="#FCD34D" rx="2"/>
+  <rect x="35" y="80" width="30" height="5" fill="#FCD34D" rx="2.5"/>
+  
+  <!-- Sparkle effects -->
+  <circle cx="25" cy="30" r="2" fill="#FFF" opacity="0.8"/>
+  <circle cx="75" cy="30" r="2" fill="#FFF" opacity="0.8"/>
+</svg>
