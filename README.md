@@ -12,7 +12,8 @@ A comprehensive Next.js application for managing and tabulating school college b
 
 ### 👨‍💼 **Admin Dashboard**
 - **Event Management**: Create, edit, delete, and manage pageant events
-- **Contestant Management**: Add, edit, delete contestants with photos, course info, and details
+- **Contestant Management**: Add, edit, delete contestants with cloud-based photo uploads
+- **Image Upload**: Cloudinary integration with automatic WebP optimization for better performance
 - **Judge Management**: Create, edit, delete judge accounts with login credentials and password updates
 - **Category Management**: Add, edit, delete scoring categories with weights and max scores
 - **Event Activation**: Set active events visible to public
@@ -74,6 +75,11 @@ Create a `.env` file in the root directory:
 DATABASE_URL="postgresql://user:password@localhost:5432/pageant_db"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-key-here"
+
+# Cloudinary Configuration (for image uploads)
+NEXT_PUBLIC_CLOUDINARY_URL="https://api.cloudinary.com/v1_1/your-cloud-name/image/upload"
+NEXT_PUBLIC_CLOUDINARY_API_KEY="your-api-key"
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET="your-upload-preset"
 ```
 
 4. Set up the database:
@@ -292,6 +298,14 @@ Built with modern web technologies for educational institutions to manage their 
 - ✅ CSV export for data analysis
 - ✅ PDF-ready print reports
 - ✅ Professional styling and formatting
+
+### Image Upload & Optimization
+- ✅ Cloudinary integration for cloud-based image storage
+- ✅ Automatic WebP conversion for better performance
+- ✅ Image optimization with quality compression
+- ✅ Drag-and-drop upload interface
+- ✅ Progress tracking and preview functionality
+- ✅ Fallback to URL input for flexibility
 
 ### Database & Security Improvements
 - ✅ PostgreSQL database support for production
