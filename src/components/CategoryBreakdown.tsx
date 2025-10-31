@@ -1,9 +1,23 @@
-import { Contestant, Category } from '@/lib/data';
+interface Contestant {
+  id: string | number;
+  name: string;
+  age: number;
+  course: string;
+  year: string;
+  photo?: string;
+}
+
+interface Category {
+  id: string | number;
+  name: string;
+  maxScore: number;
+  weight: number;
+}
 
 interface CategoryBreakdownProps {
   contestants: Contestant[];
   categories: Category[];
-  totalScores: { [key: number]: number };
+  totalScores: { [key: string | number]: number };
 }
 
 export default function CategoryBreakdown({ contestants, categories, totalScores }: CategoryBreakdownProps) {

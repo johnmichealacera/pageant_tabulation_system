@@ -9,12 +9,12 @@ import CategoryBreakdown from '@/components/CategoryBreakdown';
 
 interface EventData {
   event: {
-    id: number;
+    id: string;
     name: string;
     description: string;
     eventDate: string;
     contestants: Array<{
-      id: number;
+      id: string;
       name: string;
       age: number;
       course: string;
@@ -22,18 +22,18 @@ interface EventData {
       photo?: string;
     }>;
     judges: Array<{
-      id: number;
+      id: string;
       name: string;
       role: string;
     }>;
     categories: Array<{
-      id: number;
+      id: string;
       name: string;
       maxScore: number;
       weight: number;
     }>;
     scores: Array<{
-      id: number;
+      id: string;
       score: number;
       contestantId: string;
       categoryId: string;

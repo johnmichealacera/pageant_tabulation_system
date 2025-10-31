@@ -12,7 +12,7 @@ export async function GET(
     
     const userRole = (session?.user as any)?.role;
     const userId = (session?.user as any)?.id;
-    if (!session || userRole !== 'Judge') {
+    if (!session || userRole !== 'JUDGE') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

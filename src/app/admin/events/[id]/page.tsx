@@ -72,6 +72,60 @@ export default function EventManagement({ params }: { params: { id: string } }) 
     }
   };
 
+  const handleDeleteContestant = async (contestantId: string) => {
+    try {
+      const response = await fetch(`/api/admin/events/${params.id}/contestants/${contestantId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        fetchEvent();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to delete contestant');
+      }
+    } catch (error) {
+      console.error('Error deleting contestant:', error);
+      alert('Failed to delete contestant');
+    }
+  };
+
+  const handleDeleteJudge = async (judgeId: string) => {
+    try {
+      const response = await fetch(`/api/admin/events/${params.id}/judges/${judgeId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        fetchEvent();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to delete judge');
+      }
+    } catch (error) {
+      console.error('Error deleting judge:', error);
+      alert('Failed to delete judge');
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId: string) => {
+    try {
+      const response = await fetch(`/api/admin/events/${params.id}/categories/${categoryId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        fetchEvent();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to delete category');
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      alert('Failed to delete category');
+    }
+  };
+
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -206,8 +260,8 @@ export default function EventManagement({ params }: { params: { id: string } }) 
                       </button>
                       <button
                         onClick={() => {
-                          if (confirm('Are you sure you want to delete this contestant?')) {
-                            // TODO: Implement delete functionality
+                          if (confirm('Are you sure you want to delete this contestant? All scores will also be deleted.')) {
+                            handleDeleteContestant(contestant.id);
                           }
                         }}
                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium"
@@ -262,8 +316,8 @@ export default function EventManagement({ params }: { params: { id: string } }) 
                       </button>
                       <button
                         onClick={() => {
-                          if (confirm('Are you sure you want to delete this judge?')) {
-                            // TODO: Implement delete functionality
+                          if (confirm('Are you sure you want to delete this judge? All their scores will also be deleted.')) {
+                            handleDeleteJudge(judge.id);
                           }
                         }}
                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium"
@@ -318,8 +372,8 @@ export default function EventManagement({ params }: { params: { id: string } }) 
                       </button>
                       <button
                         onClick={() => {
-                          if (confirm('Are you sure you want to delete this category?')) {
-                            // TODO: Implement delete functionality
+                          if (confirm('Are you sure you want to delete this category? All scores in this category will also be deleted.')) {
+                            handleDeleteCategory(category.id);
                           }
                         }}
                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium"

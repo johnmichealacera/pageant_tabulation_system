@@ -11,12 +11,14 @@ A comprehensive Next.js application for managing and tabulating school college b
 - **Session Management**: Persistent login sessions with NextAuth.js
 
 ### 👨‍💼 **Admin Dashboard**
-- **Event Management**: Create, edit, and manage pageant events
-- **Contestant Management**: Add contestants with photos, course info, and details
-- **Judge Management**: Create judge accounts with login credentials
-- **Category Management**: Define scoring categories with weights and max scores
+- **Event Management**: Create, edit, delete, and manage pageant events
+- **Contestant Management**: Add, edit, delete contestants with photos, course info, and details
+- **Judge Management**: Create, edit, delete judge accounts with login credentials and password updates
+- **Category Management**: Add, edit, delete scoring categories with weights and max scores
 - **Event Activation**: Set active events visible to public
 - **Real-time Monitoring**: View scoring progress and results
+- **Comprehensive Reports**: Generate detailed reports with rankings, statistics, and score breakdowns
+- **Export Functionality**: Export reports to CSV or print as PDF
 
 ### 👩‍⚖️ **Judge Interface**
 - **Personal Dashboard**: View assigned events and scoring progress
@@ -33,10 +35,18 @@ A comprehensive Next.js application for managing and tabulating school college b
 - **Category Breakdown**: Detailed performance analysis by category
 
 ### 📊 **Database & Data Management**
-- **SQLite Database**: Persistent data storage with Prisma ORM
+- **PostgreSQL Database**: Production-ready data storage with Prisma ORM
 - **Real-time Calculations**: Automatic score calculations and rankings
-- **Data Integrity**: Proper relationships and constraints
+- **Data Integrity**: Proper relationships and constraints with cascade deletes
 - **Sample Data**: Pre-populated realistic sample data for testing
+
+### 📄 **Reports & Analytics**
+- **Comprehensive Reports**: Full event analysis with rankings and statistics
+- **Detailed Score Breakdowns**: Per-contestant scores by category and judge
+- **CSV Export**: Download complete data for external analysis
+- **PDF Export**: Professional print-ready reports
+- **Statistics Dashboard**: Completion rates, averages, and performance metrics
+- **Transparency**: Full judge-by-judge scoring for accountability
 
 ## 🚀 Getting Started
 
@@ -44,6 +54,7 @@ A comprehensive Next.js application for managing and tabulating school college b
 
 - Node.js 18+ 
 - npm or yarn
+- PostgreSQL database (or use SQLite for development)
 
 ### Installation
 
@@ -57,22 +68,30 @@ cd pageant-tabulation-system
 npm install
 ```
 
-3. Set up the database:
+3. Set up environment variables:
+Create a `.env` file in the root directory:
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/pageant_db"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key-here"
+```
+
+4. Set up the database:
 ```bash
 npx prisma migrate dev --name init
 ```
 
-4. Seed the database with sample data:
+5. Seed the database with sample data:
 ```bash
 npm run db:seed
 ```
 
-5. Run the development server:
+6. Run the development server:
 ```bash
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+7. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🔑 Login Credentials
 
@@ -169,7 +188,7 @@ The application includes comprehensive sample data:
 - **Tailwind CSS** - Utility-first CSS framework for styling
 - **NextAuth.js** - Authentication and session management
 - **Prisma** - Modern database toolkit and ORM
-- **SQLite** - Lightweight database for development
+- **PostgreSQL** - Production-ready relational database
 - **bcryptjs** - Password hashing and security
 - **React** - UI library for building components
 
@@ -205,8 +224,8 @@ The application includes comprehensive sample data:
    - Login as admin
    - Create a new pageant event
    - Add contestants with their information
-   - Create judge accounts
-   - Define scoring categories
+   - Create judge accounts with login credentials
+   - Define scoring categories with weights
    - Activate the event
 
 2. **Judge Scoring**:
@@ -220,6 +239,13 @@ The application includes comprehensive sample data:
    - See live rankings and scores
    - View contestant profiles
    - No login required
+
+4. **Reports & Documentation**:
+   - Generate comprehensive reports
+   - Export data to CSV for analysis
+   - Print professional PDF reports
+   - View detailed score breakdowns
+   - Track statistics and completion rates
 
 ## 🚀 Deployment
 
@@ -246,3 +272,40 @@ This project is licensed under the ISC License.
 ## 🎉 Acknowledgments
 
 Built with modern web technologies for educational institutions to manage their pageant events efficiently and professionally.
+
+---
+
+## 🆕 Recent Updates
+
+### Complete Admin Management System
+- ✅ Full CRUD operations for contestants, judges, and categories
+- ✅ Edit functionality with pre-filled forms
+- ✅ Delete functionality with cascade handling
+- ✅ Password update capability for judges
+- ✅ Role-based authentication fixes
+
+### Professional Reporting System
+- ✅ Comprehensive event reports with full data aggregation
+- ✅ Detailed score breakdowns by judge and category
+- ✅ Rankings with visual podium display
+- ✅ Statistics dashboard with completion rates
+- ✅ CSV export for data analysis
+- ✅ PDF-ready print reports
+- ✅ Professional styling and formatting
+
+### Database & Security Improvements
+- ✅ PostgreSQL database support for production
+- ✅ TypeScript type safety improvements
+- ✅ Cascade delete handling for data integrity
+- ✅ Enhanced authentication with proper role checks
+- ✅ Secure password management with bcrypt
+
+---
+
+## 📋 Project Status
+
+✅ **Production Ready** - All core features implemented and tested
+✅ **Secure** - Authentication and authorization in place
+✅ **Responsive** - Mobile-friendly design
+✅ **Documented** - Complete documentation and setup guides
+✅ **Maintained** - Clean code with proper error handling

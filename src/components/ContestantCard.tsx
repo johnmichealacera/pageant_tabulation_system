@@ -1,4 +1,11 @@
-import { Contestant } from '@/lib/data';
+interface Contestant {
+  id: string | number;
+  name: string;
+  age: number;
+  course: string;
+  year: string;
+  photo?: string;
+}
 
 interface ContestantCardProps {
   contestant: Contestant;
