@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const activeEvent = await prisma.pageantEvent.findFirst({
-      where: { isActive: true },
+    const event = await prisma.pageantEvent.findUnique({
+      where: { id: params.id },
       include: {
         contestants: true,
         judges: {
@@ -30,9 +33,9 @@ export async function GET() {
       },
     });
 
-    if (!activeEvent) {
+    if (!event) {
       return NextResponse.json(
-        { error: 'No active event found' }, 
+        { error: 'Event not found' }, 
         { 
           status: 404,
           headers: {
@@ -45,11 +48,11 @@ export async function GET() {
     // Calculate rankings
     const contestantScores: { [key: string]: number } = {};
     
-    activeEvent.contestants.forEach((contestant: any) => {
+    event.contestants.forEach((contestant: any) => {
       let totalScore = 0;
       
-      activeEvent.categories.forEach((category: any) => {
-        const categoryScores = activeEvent.scores.filter(
+      event.categories.forEach((category: any) => {
+        const categoryScores = event.scores.filter(
           (score: any) => score.contestantId === contestant.id && score.categoryId === category.id
         );
         
@@ -66,7 +69,7 @@ export async function GET() {
       .map(([contestantId, score]) => ({
         contestantId,
         score,
-        contestant: activeEvent.contestants.find((c: any) => c.id === contestantId)
+        contestant: event.contestants.find((c: any) => c.id === contestantId)
       }))
       .sort((a, b) => b.score - a.score)
       .map((item, index) => ({
@@ -75,7 +78,7 @@ export async function GET() {
       }));
 
     return NextResponse.json({
-      event: activeEvent,
+      event,
       rankings,
       totalScores: contestantScores,
     }, {
@@ -84,7 +87,7 @@ export async function GET() {
       }
     });
   } catch (error) {
-    console.error('Error fetching active event:', error);
+    console.error('Error fetching event:', error);
     return NextResponse.json(
       { error: 'Internal server error' }, 
       { 
@@ -96,3 +99,4 @@ export async function GET() {
     );
   }
 }
+

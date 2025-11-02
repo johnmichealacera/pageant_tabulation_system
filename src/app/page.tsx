@@ -49,16 +49,39 @@ interface EventData {
   totalScores: { [key: string]: number };
 }
 
+interface EventOption {
+  id: string;
+  name: string;
+  description: string;
+  eventDate: string;
+  isActive: boolean;
+}
+
 export default function Home() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'contestants' | 'scoring' | 'rankings' | 'breakdown'>('contestants');
   const [eventData, setEventData] = useState<EventData | null>(null);
+  const [allEvents, setAllEvents] = useState<EventOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedContestantId, setSelectedContestantId] = useState<string | null>(null);
 
   useEffect(() => {
+    fetchAllEvents();
     fetchActiveEvent();
   }, []);
+
+  const fetchAllEvents = async () => {
+    try {
+      const response = await fetch('/api/public/events');
+      if (response.ok) {
+        const data = await response.json();
+        setAllEvents(data);
+      }
+    } catch (error) {
+      console.error('Error fetching all events:', error);
+    }
+  };
 
   const fetchActiveEvent = async () => {
     try {
@@ -77,6 +100,39 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchEventById = async (eventId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/public/events/${eventId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setEventData(data);
+        setError(null);
+      } else {
+        setError('Failed to load event data');
+      }
+    } catch (error) {
+      console.error('Error fetching event:', error);
+      setError('Failed to load event data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEventChange = (eventId: string) => {
+    fetchEventById(eventId);
+  };
+
+  const handleContestantClick = (contestantId: string) => {
+    setSelectedContestantId(contestantId);
+    setActiveTab('breakdown');
+  };
+
+  const handleBackToContestants = () => {
+    setSelectedContestantId(null);
+    setActiveTab('contestants');
   };
 
   const tabs = [
@@ -123,24 +179,51 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Event Selection Bar */}
+      {allEvents.length > 1 && (
+        <div className="bg-indigo-50 border-b border-indigo-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-3">
+                <span className="text-sm font-medium text-indigo-900">View Event:</span>
+                <select
+                  onChange={(e) => handleEventChange(e.target.value)}
+                  value={eventData?.event.id || ''}
+                  className="block w-full sm:w-auto px-3 py-1.5 bg-white border border-indigo-200 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                >
+                  {allEvents.map((event) => (
+                    <option key={event.id} value={event.id}>
+                      {event.name} {event.isActive && '(Active)'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <span className="text-xs text-indigo-600">
+                {allEvents.length} {allEvents.length === 1 ? 'event' : 'events'} available
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{eventData.event.name}</h1>
-              <p className="text-gray-600">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center py-4 md:py-6 gap-4">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 truncate">{eventData.event.name}</h1>
+              <p className="text-sm md:text-base text-gray-600 mt-1">
                 {eventData.event.description} • {new Date(eventData.event.eventDate).toLocaleDateString()}
               </p>
             </div>
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center justify-between md:justify-end space-x-6">
               <div className="text-right">
-                <p className="text-sm text-gray-500">Total Contestants</p>
-                <p className="text-2xl font-bold text-indigo-600">{eventData.event.contestants.length}</p>
+                <p className="text-xs md:text-sm text-gray-500">Total Contestants</p>
+                <p className="text-xl md:text-2xl font-bold text-indigo-600">{eventData.event.contestants.length}</p>
               </div>
               <button
                 onClick={() => router.push('/auth/signin')}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap"
               >
                 Login
               </button>
@@ -150,20 +233,20 @@ export default function Home() {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="bg-white border-b">
+      <nav className="bg-white border-b overflow-x-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
+          <div className="flex space-x-4 sm:space-x-8 min-w-max">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <span className="mr-2">{tab.icon}</span>
+                <span className="mr-1 sm:mr-2">{tab.icon}</span>
                 {tab.label}
               </button>
             ))}
@@ -184,7 +267,11 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {eventData.event.contestants.map((contestant) => (
-                  <ContestantCard key={contestant.id} contestant={contestant} />
+                  <ContestantCard 
+                    key={contestant.id} 
+                    contestant={contestant} 
+                    onClick={() => handleContestantClick(contestant.id)}
+                  />
                 ))}
               </div>
             )}
@@ -257,18 +344,139 @@ export default function Home() {
 
         {activeTab === 'breakdown' && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Category Breakdown</h2>
-            {eventData.rankings.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-gray-500 mb-4">No scores available yet</div>
-                <p className="text-sm text-gray-400">Category breakdown will appear once judges start scoring contestants</p>
-              </div>
+            {selectedContestantId ? (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:space-x-4">
+                    <button
+                      onClick={handleBackToContestants}
+                      className="text-indigo-600 hover:text-indigo-700 font-medium text-sm sm:text-base"
+                    >
+                      ← Back to Contestants
+                    </button>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                      {eventData.event.contestants.find(c => c.id === selectedContestantId)?.name}'s Performance
+                    </h2>
+                  </div>
+                </div>
+                
+                {/* Contestant-specific breakdown */}
+                {(() => {
+                  const contestant = eventData.event.contestants.find(c => c.id === selectedContestantId);
+                  if (!contestant || !eventData.event.scores.length) {
+                    return (
+                      <div className="text-center py-12">
+                        <div className="text-gray-500 mb-4">No scores available yet</div>
+                        <p className="text-sm text-gray-400">Scores will appear once judges start scoring</p>
+                      </div>
+                    );
+                  }
+
+                  // Calculate scores per category for this contestant
+                  const categoryScores = eventData.event.categories.map(category => {
+                    const catScores = eventData.event.scores.filter(
+                      s => s.contestantId === selectedContestantId && s.categoryId === category.id
+                    );
+                    const avgScore = catScores.length > 0
+                      ? catScores.reduce((sum, s) => sum + s.score, 0) / catScores.length
+                      : 0;
+                    const weightedScore = avgScore * category.weight;
+                    
+                    return {
+                      category,
+                      avgScore,
+                      weightedScore,
+                      count: catScores.length,
+                    };
+                  });
+
+                  return (
+                    <div className="space-y-6">
+                      {/* Contestant info card */}
+                      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                          {contestant.photo ? (
+                            <img
+                              src={contestant.photo}
+                              alt={contestant.name}
+                              className="w-20 h-28 sm:w-24 sm:h-32 rounded-lg object-cover mx-auto sm:mx-0"
+                            />
+                          ) : (
+                            <div className="w-20 h-28 sm:w-24 sm:h-32 bg-gray-200 rounded-lg flex items-center justify-center mx-auto sm:mx-0">
+                              <span className="text-4xl">👸</span>
+                            </div>
+                          )}
+                          <div className="flex-1 text-center sm:text-left">
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{contestant.name}</h3>
+                            <p className="text-gray-600">{contestant.course}</p>
+                            <p className="text-gray-500">{contestant.year} • Age {contestant.age}</p>
+                            <div className="mt-2">
+                              <span className="text-base sm:text-lg font-bold text-indigo-600">
+                                Total Score: {eventData.totalScores[selectedContestantId]?.toFixed(2) || '0.00'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Category performance */}
+                      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Category Performance</h3>
+                        <div className="space-y-4">
+                          {categoryScores.map(({ category, avgScore, weightedScore, count }) => (
+                            <div key={category.id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+                              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-2">
+                                <h4 className="font-medium text-gray-900 text-sm sm:text-base">{category.name}</h4>
+                                <div className="text-left sm:text-right">
+                                  <div className="text-xs sm:text-sm text-gray-500">Weight: {(category.weight * 100).toFixed(0)}%</div>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-2">
+                                <div>
+                                  <div className="text-xl sm:text-2xl font-bold text-primary-600">{avgScore.toFixed(1)}</div>
+                                  <div className="text-xs text-gray-500">Avg Score</div>
+                                </div>
+                                <div>
+                                  <div className="text-xl sm:text-2xl font-bold text-indigo-600">{weightedScore.toFixed(1)}</div>
+                                  <div className="text-xs text-gray-500">Weighted</div>
+                                </div>
+                                <div>
+                                  <div className="text-xl sm:text-2xl font-bold text-gray-900">{count}</div>
+                                  <div className="text-xs text-gray-500">Judges</div>
+                                </div>
+                              </div>
+                              <div className="mt-2">
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${((avgScore / category.maxScore) * 100)}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </>
             ) : (
-              <CategoryBreakdown 
-                contestants={eventData.event.contestants}
-                categories={eventData.event.categories}
-                totalScores={eventData.totalScores}
-              />
+              <>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Category Breakdown</h2>
+                {eventData.rankings.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-gray-500 mb-4">No scores available yet</div>
+                    <p className="text-sm text-gray-400">Category breakdown will appear once judges start scoring contestants</p>
+                  </div>
+                ) : (
+                  <CategoryBreakdown 
+                    contestants={eventData.event.contestants}
+                    categories={eventData.event.categories}
+                    totalScores={eventData.totalScores}
+                  />
+                )}
+              </>
             )}
           </div>
         )}

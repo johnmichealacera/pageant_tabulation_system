@@ -9,11 +9,15 @@ interface Contestant {
 
 interface ContestantCardProps {
   contestant: Contestant;
+  onClick?: () => void;
 }
 
-export default function ContestantCard({ contestant }: ContestantCardProps) {
+export default function ContestantCard({ contestant, onClick }: ContestantCardProps) {
   return (
-    <div className="card hover:shadow-lg transition-shadow duration-200">
+    <div 
+      className="card hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex items-center space-x-4">
         <div className="flex-shrink-0">
           {contestant.photo ? (
@@ -34,11 +38,6 @@ export default function ContestantCard({ contestant }: ContestantCardProps) {
           </h3>
           <p className="text-sm text-gray-600">{contestant.course}</p>
           <p className="text-sm text-gray-500">{contestant.year} • Age {contestant.age}</p>
-        </div>
-        <div className="flex-shrink-0">
-          <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-            <span className="text-sm font-bold text-primary-600">#{contestant.id}</span>
-          </div>
         </div>
       </div>
     </div>

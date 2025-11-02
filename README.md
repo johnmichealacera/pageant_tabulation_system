@@ -30,10 +30,14 @@ A comprehensive Next.js application for managing and tabulating school college b
 
 ### 🏆 **Public View**
 - **Live Event Display**: Real-time pageant information without login
+- **Event Switcher**: Dropdown to view multiple events or switch between them
 - **Contestant Profiles**: View all contestants with photos and details
+- **Interactive Contestant Cards**: Click to view detailed performance breakdown
 - **Live Rankings**: Updated rankings as judges submit scores
 - **Scoring System Info**: View categories, judges, and scoring criteria
 - **Category Breakdown**: Detailed performance analysis by category
+- **Individual Performance**: Per-contestant score breakdown with category details
+- **Responsive Design**: Fully optimized for mobile, tablet, and desktop
 
 ### 📊 **Database & Data Management**
 - **PostgreSQL Database**: Production-ready data storage with Prisma ORM
@@ -126,20 +130,26 @@ pageant-tabulation-system/
 │   │   ├── judge/              # Judge interface pages
 │   │   ├── auth/               # Authentication pages
 │   │   ├── api/                # API routes
+│   │   │   ├── admin/          # Admin API endpoints
+│   │   │   ├── judge/          # Judge API endpoints
+│   │   │   └── public/         # Public API endpoints
 │   │   ├── globals.css         # Global styles
-│   │   ├── layout.tsx          # Root layout
-│   │   └── page.tsx            # Public homepage
+│   │   ├── layout.tsx          # Root layout with favicon
+│   │   └── page.tsx            # Public homepage with event switcher
 │   ├── components/
 │   │   ├── ContestantCard.tsx  # Contestant display component
 │   │   ├── ScoreTable.tsx      # Scoring table component
 │   │   ├── RankingTable.tsx    # Rankings display
 │   │   ├── CategoryBreakdown.tsx # Category analysis
+│   │   ├── ImageUpload.tsx     # Cloudinary image upload component
 │   │   └── Providers.tsx       # Session provider wrapper
 │   └── lib/
 │       ├── auth.ts             # NextAuth configuration
 │       ├── prisma.ts           # Prisma client setup
+│       ├── cloudinary.ts       # Cloudinary upload utilities
 │       └── data.ts             # Legacy mock data (reference)
 ├── public/                     # Static assets
+│   └── favicon.svg             # Custom pageant crown favicon
 ├── .env                        # Environment variables
 ├── package.json                # Dependencies and scripts
 ├── tailwind.config.js          # Tailwind CSS configuration
@@ -213,7 +223,10 @@ The application includes comprehensive sample data:
 - Secure API endpoints
 
 ### Responsive Design
-- Mobile-friendly interface
+- **Mobile-First Approach**: Fully optimized for all screen sizes
+- **Responsive Navigation**: Touch-friendly interface with adaptive layouts
+- **Dynamic Content**: Event switcher and content adapts to device
+- **Cross-Device Compatibility**: Seamless experience on mobile, tablet, and desktop
 - Modern UI with Tailwind CSS
 - Intuitive navigation and user experience
 - Professional styling throughout
@@ -283,6 +296,24 @@ Built with modern web technologies for educational institutions to manage their 
 
 ## 🆕 Recent Updates
 
+### Enhanced Public View & UX
+- ✅ **Event Switcher**: Dropdown to easily view and switch between multiple events
+- ✅ **Interactive Contestant Cards**: Click contestant cards to view detailed performance
+- ✅ **Individual Performance Views**: Per-contestant category breakdown with real-time scores
+- ✅ **Removed ID Display**: Clean card design without primary key clutter
+- ✅ **Custom Favicon**: Professional crown icon displayed in browser tabs
+- ✅ **Real-time Data**: No-cache headers for instant updates on event changes
+- ✅ **Navigation Flow**: Smooth transitions between contestants and breakdown views
+
+### Complete Mobile Responsiveness
+- ✅ **Event Selection Bar**: Responsive layout that adapts to screen size
+- ✅ **Header Optimization**: Mobile-friendly title and description display
+- ✅ **Navigation Tabs**: Horizontal scroll for mobile, full layout for desktop
+- ✅ **Contestant Breakdown**: Optimized spacing and text sizes for all devices
+- ✅ **Category Tables**: Word wrapping and responsive padding for readability
+- ✅ **Touch-Friendly**: Larger tap targets and improved spacing on mobile
+- ✅ **Responsive Typography**: Adaptive font sizes across all components
+
 ### Complete Admin Management System
 - ✅ Full CRUD operations for contestants, judges, and categories
 - ✅ Edit functionality with pre-filled forms
@@ -313,6 +344,7 @@ Built with modern web technologies for educational institutions to manage their 
 - ✅ Cascade delete handling for data integrity
 - ✅ Enhanced authentication with proper role checks
 - ✅ Secure password management with bcrypt
+- ✅ API cache control for real-time data updates
 
 ---
 
