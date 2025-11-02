@@ -69,11 +69,53 @@ export default function Home() {
   useEffect(() => {
     fetchAllEvents();
     fetchActiveEvent();
-  }, []);
+
+    // Refresh data when user returns to the tab/page
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        if (eventData?.event?.id) {
+          fetchEventById(eventData.event.id);
+        } else {
+          fetchActiveEvent();
+        }
+      }
+    };
+
+    // Refresh data when window gains focus
+    const handleFocus = () => {
+      if (eventData?.event?.id) {
+        fetchEventById(eventData.event.id);
+      } else {
+        fetchActiveEvent();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [eventData?.event?.id]);
+
+  const handleRefresh = () => {
+    if (eventData?.event?.id) {
+      fetchEventById(eventData.event.id);
+    } else {
+      fetchActiveEvent();
+    }
+  };
 
   const fetchAllEvents = async () => {
     try {
-      const response = await fetch('/api/public/events');
+      const response = await fetch('/api/public/events', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setAllEvents(data);
@@ -85,7 +127,13 @@ export default function Home() {
 
   const fetchActiveEvent = async () => {
     try {
-      const response = await fetch('/api/public/active-event');
+      const response = await fetch('/api/public/active-event', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setEventData(data);
@@ -105,7 +153,13 @@ export default function Home() {
   const fetchEventById = async (eventId: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/public/events/${eventId}`);
+      const response = await fetch(`/api/public/events/${eventId}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setEventData(data);
@@ -216,11 +270,20 @@ export default function Home() {
                 {eventData.event.description} • {new Date(eventData.event.eventDate).toLocaleDateString()}
               </p>
             </div>
-            <div className="flex items-center justify-between md:justify-end space-x-6">
+            <div className="flex items-center justify-between md:justify-end space-x-4 sm:space-x-6">
               <div className="text-right">
                 <p className="text-xs md:text-sm text-gray-500">Total Contestants</p>
                 <p className="text-xl md:text-2xl font-bold text-indigo-600">{eventData.event.contestants.length}</p>
               </div>
+              <button
+                onClick={handleRefresh}
+                className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                title="Refresh data"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
               <button
                 onClick={() => router.push('/auth/signin')}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap"
