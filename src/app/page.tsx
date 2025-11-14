@@ -66,10 +66,14 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [selectedContestantId, setSelectedContestantId] = useState<string | null>(null);
 
+  // Initial load: fetch events and active event only once on mount
   useEffect(() => {
     fetchAllEvents();
     fetchActiveEvent();
+  }, []); // Empty dependency array - only run on mount
 
+  // Separate effect for refresh listeners that use the current eventData
+  useEffect(() => {
     // Refresh data when user returns to the tab/page
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -97,7 +101,7 @@ export default function Home() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleFocus);
     };
-  }, [eventData?.event?.id]);
+  }, [eventData?.event?.id]); // This effect can depend on eventData since it only refreshes, doesn't fetch active event
 
   const handleRefresh = () => {
     if (eventData?.event?.id) {
