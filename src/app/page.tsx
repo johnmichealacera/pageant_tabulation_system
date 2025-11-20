@@ -113,7 +113,8 @@ export default function Home() {
 
   const fetchAllEvents = async () => {
     try {
-      const response = await fetch('/api/public/events', {
+      // Add cache-busting query parameter
+      const response = await fetch(`/api/public/events?t=${Date.now()}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -131,7 +132,8 @@ export default function Home() {
 
   const fetchActiveEvent = async () => {
     try {
-      const response = await fetch('/api/public/active-event', {
+      // Add cache-busting query parameter
+      const response = await fetch(`/api/public/active-event?t=${Date.now()}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -157,7 +159,8 @@ export default function Home() {
   const fetchEventById = async (eventId: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/public/events/${eventId}`, {
+      // Add cache-busting query parameter
+      const response = await fetch(`/api/public/events/${eventId}?t=${Date.now()}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
