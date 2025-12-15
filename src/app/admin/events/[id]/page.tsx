@@ -173,12 +173,23 @@ export default function EventManagement({ params }: { params: { id: string } }) 
                 Back to Dashboard
               </button>
               {event._count.scores > 0 && (
-                <button
-                  onClick={() => router.push(`/admin/events/${event.id}/results`)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-                >
-                  View Results
-                </button>
+                <>
+                  <button
+                    onClick={() => router.push(`/admin/events/${event.id}/results`)}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                  >
+                    View Results
+                  </button>
+                  <button
+                    onClick={() => router.push(`/admin/events/${event.id}/report`)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v1a1 1 0 001 1h4a1 1 0 001-1v-1m3-2V8a2 2 0 00-2-2H8a2 2 0 00-2 2v8m5 -4h4" />
+                    </svg>
+                    Comprehensive Report
+                  </button>
+                </>
               )}
             </div>
           </div>
