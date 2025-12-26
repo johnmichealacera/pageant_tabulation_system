@@ -3,6 +3,7 @@ interface Ranking {
   score: number;
   contestant: any;
   rank: number;
+  number: number;
 }
 
 interface RankingTableProps {
@@ -56,7 +57,7 @@ export default function RankingTable({ rankings }: RankingTableProps) {
 
             {/* Candidate Number */}
             <div className="text-lg font-bold text-indigo-600 mb-1">
-              Candidate {ranking.rank}
+              Candidate {ranking.number}
             </div>
 
             {/* Name */}
@@ -110,7 +111,7 @@ export default function RankingTable({ rankings }: RankingTableProps) {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-indigo-600">Candidate {ranking.rank}</div>
+                      <div className="text-sm font-bold text-indigo-600">Candidate {ranking.number}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{ranking.contestant.name}</div>

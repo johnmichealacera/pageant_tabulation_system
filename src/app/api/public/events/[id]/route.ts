@@ -51,30 +51,42 @@ export async function GET(
 
     // Calculate rankings
     const contestantScores: { [key: string]: number } = {};
-    
+
+    // First, assign contestant numbers based on alphabetical order (same as public display)
+    const contestantsWithNumbers = event.contestants
+      .sort((a: any, b: any) => a.name.localeCompare(b.name))
+      .map((contestant: any, index: number) => ({
+        ...contestant,
+        number: index + 1
+      }));
+
     event.contestants.forEach((contestant: any) => {
       let totalScore = 0;
-      
+
       event.categories.forEach((category: any) => {
         const categoryScores = event.scores.filter(
           (score: any) => score.contestantId === contestant.id && score.categoryId === category.id
         );
-        
+
         if (categoryScores.length > 0) {
           const averageScore = categoryScores.reduce((sum: any, score: any) => sum + score.score, 0) / categoryScores.length;
           totalScore += averageScore * category.weight;
         }
       });
-      
+
       contestantScores[contestant.id] = Math.round(totalScore * 100) / 100;
     });
 
     const rankings = Object.entries(contestantScores)
-      .map(([contestantId, score]) => ({
-        contestantId,
-        score,
-        contestant: event.contestants.find((c: any) => c.id === contestantId)
-      }))
+      .map(([contestantId, score]) => {
+        const contestant = contestantsWithNumbers.find((c: any) => c.id === contestantId);
+        return {
+          contestantId,
+          score,
+          contestant,
+          number: contestant?.number || 0
+        };
+      })
       .sort((a, b) => b.score - a.score)
       .map((item, index) => ({
         ...item,
