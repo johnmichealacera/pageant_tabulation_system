@@ -38,6 +38,7 @@ interface ReportData {
     contestantId: string;
     score: number;
     rank: number;
+    number: number;
     contestant: any;
   }>;
   detailedScores: Array<{
@@ -310,90 +311,87 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
               <h2 className="text-xl print:text-lg font-bold text-gray-900">Winners Podium</h2>
             </div>
             
-            <div className="grid grid-cols-3 gap-4 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
               {/* 2nd Place */}
-              <div className="text-center">
+              <div className="text-center order-2 sm:order-1">
                 {/* Profile Picture - Hidden in print */}
                 <div className="flex justify-center mb-4 print:hidden">
                   {topThree[1].contestant.photo ? (
                     <img
                       src={topThree[1].contestant.photo}
                       alt={topThree[1].contestant.name}
-                      className="w-20 h-24 rounded-lg object-cover border-4 border-white shadow-lg"
+                      className="w-16 sm:w-20 h-20 sm:h-24 rounded-lg object-cover border-4 border-white shadow-lg"
                     />
                   ) : (
-                    <div className="w-20 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
-                      <span className="text-3xl">👸</span>
+                    <div className="w-16 sm:w-20 h-20 sm:h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
+                      <span className="text-2xl sm:text-3xl">👸</span>
                     </div>
                   )}
                 </div>
-                <div className="bg-gray-100 rounded-t-lg p-3 print:p-2 border-2 border-gray-300 h-32 print:h-20 flex flex-col justify-end">
-                  <div className="text-4xl print:text-2xl mb-1">🥈</div>
-                  <div className="text-sm print:text-xs font-bold text-gray-700">#{topThree[1].rank}</div>
-                  <h3 className="text-sm print:text-xs font-semibold text-gray-900 truncate">{topThree[1].contestant.name}</h3>
+                <div className="bg-gray-100 rounded-t-lg p-3 print:p-2 border-2 border-gray-300 h-28 sm:h-32 print:h-20 flex flex-col justify-end">
+                  <div className="text-base sm:text-lg print:text-base font-bold mb-1 text-center">1ST RUNNER-UP</div>
+                  <h3 className="text-xs sm:text-sm print:text-xs font-semibold text-gray-900 truncate">{topThree[1].contestant.name}</h3>
                   <p className="text-xs print:text-xs text-gray-600 truncate">{topThree[1].contestant.course}</p>
-                  <div className="text-lg print:text-sm font-bold text-gray-700">{topThree[1].score}</div>
+                  <div className="text-base sm:text-lg print:text-sm font-bold text-gray-700 print:text-gray-900">{topThree[1].score}</div>
                 </div>
-                <div className="bg-gray-200 h-20 print:h-12 rounded-b-lg flex items-center justify-center">
-                  <span className="text-2xl print:text-lg font-bold text-gray-600">2</span>
+                <div className="bg-gray-200 h-16 sm:h-20 print:h-12 rounded-b-lg flex items-center justify-center">
+                  <span className="text-xl sm:text-2xl print:text-lg font-bold text-gray-600">2</span>
                 </div>
               </div>
 
               {/* 1st Place */}
-              <div className="text-center">
+              <div className="text-center order-1 sm:order-2">
                 {/* Profile Picture - Hidden in print */}
                 <div className="flex justify-center mb-4 print:hidden">
                   {topThree[0].contestant.photo ? (
                     <img
                       src={topThree[0].contestant.photo}
                       alt={topThree[0].contestant.name}
-                      className="w-24 h-28 rounded-lg object-cover border-4 border-white shadow-lg"
+                      className="w-20 sm:w-24 h-24 sm:h-28 rounded-lg object-cover border-4 border-white shadow-lg"
                     />
                   ) : (
-                    <div className="w-24 h-28 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
-                      <span className="text-4xl">👸</span>
+                    <div className="w-20 sm:w-24 h-24 sm:h-28 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
+                      <span className="text-3xl sm:text-4xl">👸</span>
                     </div>
                   )}
                 </div>
-                <div className="bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-t-lg p-4 print:p-2 border-2 border-yellow-400 h-36 print:h-24 flex flex-col justify-end">
-                  <div className="text-5xl print:text-3xl mb-1">🥇</div>
-                  <div className="text-base print:text-sm font-bold text-yellow-800">#{topThree[0].rank}</div>
-                  <h3 className="text-base print:text-sm font-semibold text-gray-900 truncate">{topThree[0].contestant.name}</h3>
-                  <p className="text-sm print:text-xs text-gray-600 truncate">{topThree[0].contestant.course}</p>
-                  <div className="text-xl print:text-base font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                <div className="bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-t-lg p-3 sm:p-4 print:p-2 border-2 border-yellow-400 h-32 sm:h-36 print:h-24 flex flex-col justify-end">
+                  <div className="text-lg sm:text-xl print:text-lg font-bold mb-1 text-center">WINNER</div>
+                  <h3 className="text-sm sm:text-base print:text-sm font-semibold text-gray-900 truncate">{topThree[0].contestant.name}</h3>
+                  <p className="text-xs sm:text-sm print:text-xs text-gray-600 truncate">{topThree[0].contestant.course}</p>
+                  <div className="text-lg sm:text-xl print:text-base font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent print:text-yellow-800 print:bg-none">
                     {topThree[0].score}
                   </div>
                 </div>
-                <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-24 print:h-16 rounded-b-lg flex items-center justify-center">
-                  <span className="text-3xl print:text-xl font-bold text-white">1</span>
+                <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-20 sm:h-24 print:h-16 rounded-b-lg flex items-center justify-center">
+                  <span className="text-2xl sm:text-3xl print:text-xl font-bold text-white">1</span>
                 </div>
               </div>
 
               {/* 3rd Place */}
-              <div className="text-center">
+              <div className="text-center order-3">
                 {/* Profile Picture - Hidden in print */}
                 <div className="flex justify-center mb-4 print:hidden">
                   {topThree[2].contestant.photo ? (
                     <img
                       src={topThree[2].contestant.photo}
                       alt={topThree[2].contestant.name}
-                      className="w-20 h-24 rounded-lg object-cover border-4 border-white shadow-lg"
+                      className="w-16 sm:w-20 h-20 sm:h-24 rounded-lg object-cover border-4 border-white shadow-lg"
                     />
                   ) : (
-                    <div className="w-20 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
-                      <span className="text-3xl">👸</span>
+                    <div className="w-16 sm:w-20 h-20 sm:h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
+                      <span className="text-2xl sm:text-3xl">👸</span>
                     </div>
                   )}
                 </div>
-                <div className="bg-orange-50 rounded-t-lg p-3 print:p-2 border-2 border-orange-300 h-32 print:h-20 flex flex-col justify-end">
-                  <div className="text-4xl print:text-2xl mb-1">🥉</div>
-                  <div className="text-sm print:text-xs font-bold text-orange-700">#{topThree[2].rank}</div>
-                  <h3 className="text-sm print:text-xs font-semibold text-gray-900 truncate">{topThree[2].contestant.name}</h3>
+                <div className="bg-orange-50 rounded-t-lg p-3 print:p-2 border-2 border-orange-300 h-28 sm:h-32 print:h-20 flex flex-col justify-end">
+                  <div className="text-base sm:text-lg print:text-base font-bold mb-1 text-center">2ND RUNNER-UP</div>
+                  <h3 className="text-xs sm:text-sm print:text-xs font-semibold text-gray-900 truncate">{topThree[2].contestant.name}</h3>
                   <p className="text-xs print:text-xs text-gray-600 truncate">{topThree[2].contestant.course}</p>
-                  <div className="text-lg print:text-sm font-bold text-orange-700">{topThree[2].score}</div>
+                  <div className="text-base sm:text-lg print:text-sm font-bold text-orange-700 print:text-orange-900">{topThree[2].score}</div>
                 </div>
-                <div className="bg-orange-200 h-20 print:h-12 rounded-b-lg flex items-center justify-center">
-                  <span className="text-2xl print:text-lg font-bold text-orange-700">3</span>
+                <div className="bg-orange-200 h-16 sm:h-20 print:h-12 rounded-b-lg flex items-center justify-center">
+                  <span className="text-xl sm:text-2xl print:text-lg font-bold text-orange-700">3</span>
                 </div>
               </div>
             </div>
@@ -467,20 +465,20 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
             <h2 className="text-xl print:text-lg font-bold text-gray-900">Complete Rankings</h2>
           </div>
           
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr className="bg-gradient-to-r from-gray-50 to-gray-100">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider print:hidden">Photo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Score</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
-                </tr>
-              </thead>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
+            <thead>
+              <tr className="bg-gradient-to-r from-gray-50 to-gray-100">
+                <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider print:hidden hidden sm:table-cell">Photo</th>
+                <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Candidate</th>
+                <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-2 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Course</th>
+                <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Age</th>
+                <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                <th className="px-2 sm:px-6 py-2 sm:py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">%</th>
+              </tr>
+            </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {reportData.rankings.map((ranking, index) => {
                   const percentage = ((ranking.score / reportData.statistics.totalPossibleScore) * 100).toFixed(1);
@@ -488,50 +486,50 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
                   
                   return (
                     <tr key={ranking.contestantId} className={`hover:bg-gray-50 ${isTopThree ? 'bg-gradient-to-r from-yellow-50/50 to-transparent' : ''}`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full font-bold ${
+                      <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
+                        <div className={`inline-flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-full font-bold text-xs ${
                           ranking.rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white' :
                           ranking.rank === 2 ? 'bg-gradient-to-r from-gray-300 to-gray-400 text-white' :
                           ranking.rank === 3 ? 'bg-gradient-to-r from-orange-300 to-orange-400 text-white' :
                           'bg-gray-100 text-gray-700'
                         }`}>
-                          {ranking.rank === 1 ? '🥇' : ranking.rank === 2 ? '🥈' : ranking.rank === 3 ? '🥉' : ranking.rank}
+                          {ranking.rank === 1 ? 'WINNER' : ranking.rank === 2 ? '1ST RUNNER-UP' : ranking.rank === 3 ? '2ND RUNNER-UP' : `${ranking.rank - 1}TH RUNNER-UP`}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap print:hidden">
+                      <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap print:hidden hidden sm:table-cell">
                         <div className="flex-shrink-0">
                           {ranking.contestant.photo ? (
                             <img
                               src={ranking.contestant.photo}
                               alt={ranking.contestant.name}
-                              className="w-12 h-16 rounded-lg object-cover border border-gray-200"
+                              className="w-8 sm:w-12 h-10 sm:h-16 rounded-lg object-cover border border-gray-200"
                             />
                           ) : (
-                            <div className="w-12 h-16 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg flex items-center justify-center border border-gray-200">
-                              <span className="text-xl">👸</span>
+                            <div className="w-8 sm:w-12 h-10 sm:h-16 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg flex items-center justify-center border border-gray-200">
+                              <span className="text-lg sm:text-xl">👸</span>
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-bold text-indigo-600">Candidate {ranking.rank}</div>
+                      <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap hidden md:table-cell">
+                        <div className="text-xs sm:text-sm font-bold text-indigo-600">Candidate {ranking.number}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{ranking.contestant.name}</div>
+                      <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm font-medium text-gray-900">{ranking.contestant.name}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-600">{ranking.contestant.course}</div>
+                      <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div className="text-xs sm:text-sm text-gray-600">{ranking.contestant.course}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="text-sm text-gray-600">{ranking.contestant.age}</div>
+                      <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-center hidden xl:table-cell">
+                        <div className="text-xs sm:text-sm text-gray-600">{ranking.contestant.age}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className={`text-lg font-bold ${isTopThree ? 'text-indigo-600' : 'text-gray-900'}`}>
+                      <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-center">
+                        <div className={`text-sm sm:text-lg font-bold ${isTopThree ? 'text-indigo-600' : 'text-gray-900'}`}>
                           {ranking.score}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                      <td className="px-2 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-center hidden md:table-cell">
+                        <div className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                           {percentage}%
                         </div>
                       </td>
@@ -560,8 +558,8 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-3">
                     {ranking && ranking.rank <= 3 && (
-                      <span className="text-2xl">
-                        {ranking.rank === 1 ? '🥇' : ranking.rank === 2 ? '🥈' : '🥉'}
+                      <span className="text-sm font-bold px-2 py-1 rounded bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800">
+                        {ranking.rank === 1 ? 'WINNER' : ranking.rank === 2 ? '1ST RUNNER-UP' : '2ND RUNNER-UP'}
                       </span>
                     )}
                     {contestantData.contestant.name}
@@ -734,6 +732,23 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
           .bg-gradient-to-r.from-indigo-600.to-purple-600 {
             background: white !important;
             color: black !important;
+          }
+
+          /* Ensure score values are visible in print */
+          .print\\:text-yellow-800 {
+            color: rgb(154 52 18) !important;
+            background: none !important;
+            -webkit-text-fill-color: rgb(154 52 18) !important;
+          }
+          .print\\:text-gray-900 {
+            color: rgb(17 24 39) !important;
+            background: none !important;
+            -webkit-text-fill-color: rgb(17 24 39) !important;
+          }
+          .print\\:text-orange-900 {
+            color: rgb(124 45 18) !important;
+            background: none !important;
+            -webkit-text-fill-color: rgb(124 45 18) !important;
           }
 
           /* Compact spacing for single page */

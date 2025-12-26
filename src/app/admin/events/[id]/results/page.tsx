@@ -173,10 +173,10 @@ export default function EventResults({ params }: { params: { id: string } }) {
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
-      case 1: return '🥇';
-      case 2: return '🥈';
-      case 3: return '🥉';
-      default: return `#${rank}`;
+      case 1: return 'WINNER';
+      case 2: return '1ST RUNNER-UP';
+      case 3: return '2ND RUNNER-UP';
+      default: return `${rank - 1}TH RUNNER-UP`;
     }
   };
 
@@ -197,7 +197,7 @@ export default function EventResults({ params }: { params: { id: string } }) {
           <div className="flex justify-between items-center py-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Event Results Report</h1>
-              <p className="text-gray-600">{reportData.event.name}</p>
+              <p className="text-gray-600">{reportData?.event.name}</p>
             </div>
             <div className="flex space-x-3 print:hidden">
               <button
@@ -279,40 +279,52 @@ export default function EventResults({ params }: { params: { id: string } }) {
           {/* Top 3 Podium */}
           {reportData.rankings.length >= 3 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 print:gap-1 print:mb-2">
-              {reportData.rankings.slice(0, 3).map((ranking) => (
-                <div key={ranking.contestantId} className="text-center p-4 print:p-2 border-2 rounded-lg bg-gradient-to-br from-gray-50 to-white">
-                  {/* Profile Picture - Hidden in print */}
-                  <div className="flex justify-center mb-2 print:hidden">
-                    {ranking.contestant.photo ? (
-                      <img
-                        src={ranking.contestant.photo}
-                        alt={ranking.contestant.name}
-                        className="w-16 h-20 rounded-lg object-cover border-4 border-white shadow-lg"
-                      />
-                    ) : (
-                      <div className="w-16 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
-                        <span className="text-2xl">👸</span>
-                      </div>
-                    )}
-                  </div>
+              {reportData.rankings.slice(0, 3).map((ranking, podiumIndex) => {
+                // For podium display, use podium position labels instead of ranking labels
+                const getPodiumLabel = (index: number) => {
+                  switch (index) {
+                    case 0: return 'WINNER'; // rankings[0] is 1st place
+                    case 1: return '1ST RUNNER-UP'; // rankings[1] is 2nd place
+                    case 2: return '2ND RUNNER-UP'; // rankings[2] is 3rd place
+                    default: return 'WINNER';
+                  }
+                };
 
-                  {/* Rank Icon */}
-                  <div className={`inline-flex items-center justify-center w-12 h-12 print:w-10 print:h-10 rounded-full border-2 mb-2 print:mb-1 ${getRankColor(ranking.rank)}`}>
-                    <span className="text-lg print:text-sm">{getRankIcon(ranking.rank)}</span>
-                  </div>
+                return (
+                  <div key={ranking.contestantId} className="text-center p-4 print:p-2 border-2 rounded-lg bg-gradient-to-br from-gray-50 to-white">
+                    {/* Profile Picture - Hidden in print */}
+                    <div className="flex justify-center mb-2 print:hidden">
+                      {ranking.contestant.photo ? (
+                        <img
+                          src={ranking.contestant.photo}
+                          alt={ranking.contestant.name}
+                          className="w-16 h-20 rounded-lg object-cover border-4 border-white shadow-lg"
+                        />
+                      ) : (
+                        <div className="w-16 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
+                          <span className="text-2xl">👸</span>
+                        </div>
+                      )}
+                    </div>
 
-                  {/* Candidate Number */}
-                  <div className="text-base print:text-sm font-bold text-indigo-600 mb-1">
-                    Candidate {ranking.number}
-                  </div>
+                    {/* Rank Icon */}
+                    <div className={`inline-flex items-center justify-center w-24 h-12 print:w-20 print:h-10 rounded-full border-2 mb-2 print:mb-1 px-2 ${getRankColor(ranking.rank)}`}>
+                      <span className="text-xs print:text-xs font-bold text-center leading-tight">{getPodiumLabel(podiumIndex)}</span>
+                    </div>
 
-                  {/* Name */}
-                  <h3 className="text-base print:text-sm font-semibold text-gray-900 mb-1">{ranking.contestant.name}</h3>
-                  <p className="text-xs print:text-xs text-gray-600 mb-2 print:mb-1">{ranking.contestant.course}</p>
-                  <div className="text-xl print:text-base font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{ranking.score}</div>
-                  <p className="text-xs text-gray-500">Total Score</p>
-                </div>
-              ))}
+                    {/* Candidate Number */}
+                    <div className="text-base print:text-sm font-bold text-indigo-600 mb-1">
+                      Candidate {ranking.number}
+                    </div>
+
+                    {/* Name */}
+                    <h3 className="text-base print:text-sm font-semibold text-gray-900 mb-1">{ranking.contestant.name}</h3>
+                    <p className="text-xs print:text-xs text-gray-600 mb-2 print:mb-1">{ranking.contestant.course}</p>
+                    <div className="text-xl print:text-base font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent print:text-indigo-600 print:bg-none">{ranking.score}</div>
+                    <p className="text-xs text-gray-500">Total Score</p>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -336,7 +348,7 @@ export default function EventResults({ params }: { params: { id: string } }) {
                   return (
                     <tr key={ranking.contestantId} className="hover:bg-gray-50">
                       <td className="px-3 py-2 whitespace-nowrap">
-                        <div className={`inline-flex items-center justify-center w-8 h-8 print:w-6 print:h-6 rounded-full text-xs print:text-xs font-bold ${getRankColor(ranking.rank)}`}>
+                        <div className={`inline-flex items-center justify-center w-20 h-8 print:w-16 print:h-6 rounded-full text-xs print:text-xs font-bold px-1 ${getRankColor(ranking.rank)}`}>
                           {getRankIcon(ranking.rank)}
                         </div>
                       </td>
@@ -365,7 +377,7 @@ export default function EventResults({ params }: { params: { id: string } }) {
                         <div className="text-sm text-gray-500">{ranking.contestant.course}</div>
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-center">
-                        <div className="text-base print:text-sm font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{ranking.score}</div>
+                        <div className="text-base print:text-sm font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent print:text-indigo-600 print:bg-none">{ranking.score}</div>
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-center">
                         <div className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
@@ -570,6 +582,16 @@ export default function EventResults({ params }: { params: { id: string } }) {
             min-height: 100vh !important;
             height: 100vh !important;
             page-break-after: avoid !important;
+          }
+
+          /* Ensure score values are visible in print */
+          .print\\:text-indigo-600 {
+            color: rgb(79 70 229) !important;
+            background: none !important;
+            -webkit-text-fill-color: rgb(79 70 229) !important;
+          }
+          .print\\:bg-none {
+            background: none !important;
           }
 
           /* Compact text scaling */

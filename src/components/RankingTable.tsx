@@ -13,10 +13,10 @@ interface RankingTableProps {
 export default function RankingTable({ rankings }: RankingTableProps) {
   const getRankIcon = (rank: number) => {
     switch (rank) {
-      case 1: return '🥇';
-      case 2: return '🥈';
-      case 3: return '🥉';
-      default: return `#${rank}`;
+      case 1: return 'WINNER';
+      case 2: return '1ST RUNNER-UP';
+      case 3: return '2ND RUNNER-UP';
+      default: return `${rank - 1}TH RUNNER-UP`;
     }
   };
 
@@ -51,8 +51,8 @@ export default function RankingTable({ rankings }: RankingTableProps) {
             </div>
 
             {/* Rank Icon */}
-            <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full border-2 mb-3 ${getRankColor(ranking.rank)}`}>
-              <span className="text-2xl">{getRankIcon(ranking.rank)}</span>
+            <div className={`inline-flex items-center justify-center w-24 h-16 rounded-full border-2 mb-3 px-2 ${getRankColor(ranking.rank)}`}>
+              <span className="text-xs font-bold text-center leading-tight">{getRankIcon(ranking.rank)}</span>
             </div>
 
             {/* Candidate Number */}
@@ -91,7 +91,7 @@ export default function RankingTable({ rankings }: RankingTableProps) {
                 return (
                   <tr key={ranking.contestantId} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold ${getRankColor(ranking.rank)}`}>
+                      <div className={`inline-flex items-center justify-center w-20 h-8 rounded-full text-xs font-bold px-2 ${getRankColor(ranking.rank)}`}>
                         {getRankIcon(ranking.rank)}
                       </div>
                     </td>
