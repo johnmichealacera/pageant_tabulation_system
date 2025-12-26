@@ -44,6 +44,7 @@ interface EventData {
     contestantId: string;
     score: number;
     rank: number;
+    number: number;
     contestant: any;
   }>;
   totalScores: { [key: string]: number };
