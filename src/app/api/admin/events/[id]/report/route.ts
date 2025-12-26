@@ -51,30 +51,42 @@ export async function GET(
 
     // Calculate rankings
     const contestantScores: { [key: string]: number } = {};
-    
+
+    // First, assign contestant numbers based on alphabetical order (same as public display)
+    const contestantsWithNumbers = event.contestants
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((contestant, index) => ({
+        ...contestant,
+        number: index + 1
+      }));
+
     event.contestants.forEach((contestant) => {
       let totalScore = 0;
-      
+
       event.categories.forEach((category) => {
         const categoryScores = event.scores.filter(
           (score) => score.contestantId === contestant.id && score.categoryId === category.id
         );
-        
+
         if (categoryScores.length > 0) {
           const averageScore = categoryScores.reduce((sum, score) => sum + score.score, 0) / categoryScores.length;
           totalScore += averageScore * category.weight;
         }
       });
-      
+
       contestantScores[contestant.id] = Math.round(totalScore * 100) / 100;
     });
 
     const rankings = Object.entries(contestantScores)
-      .map(([contestantId, score]) => ({
-        contestantId,
-        score,
-        contestant: event.contestants.find((c) => c.id === contestantId)
-      }))
+      .map(([contestantId, score]) => {
+        const contestant = contestantsWithNumbers.find((c) => c.id === contestantId);
+        return {
+          contestantId,
+          score,
+          contestant,
+          number: contestant?.number || 0
+        };
+      })
       .sort((a, b) => b.score - a.score)
       .map((item, index) => ({
         ...item,
@@ -87,12 +99,12 @@ export async function GET(
         const scores = event.scores.filter(
           s => s.contestantId === contestant.id && s.categoryId === category.id
         );
-        
-        const judgeScores = event.judges.map(judge => {
+
+        const judgeScores = event.judges.map((judge, judgeIndex) => {
           const judgeScore = scores.find(s => s.judgeId === judge.id);
           return {
             judgeId: judge.id,
-            judgeName: judge.name,
+            judgeName: `Judge ${judgeIndex + 1}`, // Anonymous judge labeling
             score: judgeScore ? judgeScore.score : null
           };
         });
@@ -133,6 +145,14 @@ export async function GET(
       ? Math.round((totalScoresSubmitted / totalPossibleSubmissions) * 100)
       : 0;
 
+    // Anonymize judges for privacy
+    const anonymousJudges = event.judges.map((judge, index) => ({
+      id: judge.id,
+      name: `Judge ${index + 1}`, // Anonymous labeling
+      role: judge.role,
+      // Remove user email for privacy
+    }));
+
     return NextResponse.json({
       event: {
         id: event.id,
@@ -142,7 +162,7 @@ export async function GET(
         isActive: event.isActive,
       },
       contestants: event.contestants,
-      judges: event.judges,
+      judges: anonymousJudges,
       categories: event.categories,
       rankings,
       detailedScores,

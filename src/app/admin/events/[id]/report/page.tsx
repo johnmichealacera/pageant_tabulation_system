@@ -225,17 +225,17 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
   const topThree = reportData.rankings.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gray-50 print:bg-white" ref={reportRef}>
+    <div className="min-h-screen bg-gray-50 print:bg-white print:text-sm report-container" ref={reportRef}>
       {/* Header with Export Options */}
-      <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg print:bg-white print:text-black print:shadow-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+      <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg print:bg-white print:text-black print:shadow-none print:py-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 print:px-2">
+          <div className="flex justify-between items-center py-4 print:py-1">
             <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
-                <span className="text-4xl">👑</span>
+              <h1 className="text-2xl print:text-xl font-bold flex items-center gap-2">
+                <span className="text-3xl print:text-2xl">👑</span>
                 Comprehensive Event Report
               </h1>
-              <p className="text-indigo-100 print:text-gray-600">{reportData.event.name}</p>
+              <p className="text-indigo-100 print:text-gray-600 print:text-sm">{reportData.event.name}</p>
             </div>
             <div className="flex space-x-3 print:hidden">
               <button
@@ -268,14 +268,14 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 print:py-2 print:px-2">
         {/* Event Information Card */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 print:shadow-none print:border print:border-gray-300">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-2xl">📋</span>
+        <div className="bg-white rounded-lg shadow-lg p-4 print:p-2 mb-4 print:shadow-none print:border print:border-gray-300 print:mb-2">
+          <div className="flex items-center gap-3 mb-4 print:mb-2">
+            <div className="w-10 h-10 print:w-8 print:h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xl print:text-sm">📋</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Event Information</h2>
+            <h2 className="text-xl print:text-lg font-bold text-gray-900">Event Information</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -302,53 +302,98 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
 
         {/* Top 3 Podium Display */}
         {topThree.length >= 3 && (
-          <div className="bg-gradient-to-br from-yellow-50 via-gray-50 to-orange-50 rounded-lg shadow-lg p-8 mb-8 print:bg-white print:shadow-none print:border print:border-gray-300">
-            <div className="flex items-center gap-3 mb-6">
+          <div className="bg-gradient-to-br from-yellow-50 via-gray-50 to-orange-50 rounded-lg shadow-lg p-4 print:p-2 mb-4 print:mb-2 print:bg-white print:shadow-none print:border print:border-gray-300">
+            <div className="flex items-center gap-3 mb-4 print:mb-2">
               <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-2xl">🏆</span>
+                <span className="text-white text-2xl print:text-lg">🏆</span>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Winners Podium</h2>
+              <h2 className="text-xl print:text-lg font-bold text-gray-900">Winners Podium</h2>
             </div>
             
             <div className="grid grid-cols-3 gap-4 items-end">
               {/* 2nd Place */}
               <div className="text-center">
-                <div className="bg-gray-100 rounded-t-lg p-6 border-2 border-gray-300 h-48 flex flex-col justify-end">
-                  <div className="text-6xl mb-2">🥈</div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">{topThree[1].contestant.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{topThree[1].contestant.course}</p>
-                  <div className="text-2xl font-bold text-gray-700">{topThree[1].score}</div>
+                {/* Profile Picture - Hidden in print */}
+                <div className="flex justify-center mb-4 print:hidden">
+                  {topThree[1].contestant.photo ? (
+                    <img
+                      src={topThree[1].contestant.photo}
+                      alt={topThree[1].contestant.name}
+                      className="w-20 h-24 rounded-lg object-cover border-4 border-white shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-20 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
+                      <span className="text-3xl">👸</span>
+                    </div>
+                  )}
                 </div>
-                <div className="bg-gray-200 h-32 rounded-b-lg flex items-center justify-center">
-                  <span className="text-4xl font-bold text-gray-600">2</span>
+                <div className="bg-gray-100 rounded-t-lg p-3 print:p-2 border-2 border-gray-300 h-32 print:h-20 flex flex-col justify-end">
+                  <div className="text-4xl print:text-2xl mb-1">🥈</div>
+                  <div className="text-sm print:text-xs font-bold text-gray-700">#{topThree[1].rank}</div>
+                  <h3 className="text-sm print:text-xs font-semibold text-gray-900 truncate">{topThree[1].contestant.name}</h3>
+                  <p className="text-xs print:text-xs text-gray-600 truncate">{topThree[1].contestant.course}</p>
+                  <div className="text-lg print:text-sm font-bold text-gray-700">{topThree[1].score}</div>
+                </div>
+                <div className="bg-gray-200 h-20 print:h-12 rounded-b-lg flex items-center justify-center">
+                  <span className="text-2xl print:text-lg font-bold text-gray-600">2</span>
                 </div>
               </div>
 
               {/* 1st Place */}
               <div className="text-center">
-                <div className="bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-t-lg p-6 border-2 border-yellow-400 h-56 flex flex-col justify-end shadow-lg">
-                  <div className="text-7xl mb-2">🥇</div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">{topThree[0].contestant.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{topThree[0].contestant.course}</p>
-                  <div className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                {/* Profile Picture - Hidden in print */}
+                <div className="flex justify-center mb-4 print:hidden">
+                  {topThree[0].contestant.photo ? (
+                    <img
+                      src={topThree[0].contestant.photo}
+                      alt={topThree[0].contestant.name}
+                      className="w-24 h-28 rounded-lg object-cover border-4 border-white shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-24 h-28 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
+                      <span className="text-4xl">👸</span>
+                    </div>
+                  )}
+                </div>
+                <div className="bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-t-lg p-4 print:p-2 border-2 border-yellow-400 h-36 print:h-24 flex flex-col justify-end">
+                  <div className="text-5xl print:text-3xl mb-1">🥇</div>
+                  <div className="text-base print:text-sm font-bold text-yellow-800">#{topThree[0].rank}</div>
+                  <h3 className="text-base print:text-sm font-semibold text-gray-900 truncate">{topThree[0].contestant.name}</h3>
+                  <p className="text-sm print:text-xs text-gray-600 truncate">{topThree[0].contestant.course}</p>
+                  <div className="text-xl print:text-base font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
                     {topThree[0].score}
                   </div>
                 </div>
-                <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-40 rounded-b-lg flex items-center justify-center">
-                  <span className="text-5xl font-bold text-white">1</span>
+                <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-24 print:h-16 rounded-b-lg flex items-center justify-center">
+                  <span className="text-3xl print:text-xl font-bold text-white">1</span>
                 </div>
               </div>
 
               {/* 3rd Place */}
               <div className="text-center">
-                <div className="bg-orange-50 rounded-t-lg p-6 border-2 border-orange-300 h-40 flex flex-col justify-end">
-                  <div className="text-5xl mb-2">🥉</div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">{topThree[2].contestant.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{topThree[2].contestant.course}</p>
-                  <div className="text-2xl font-bold text-orange-700">{topThree[2].score}</div>
+                {/* Profile Picture - Hidden in print */}
+                <div className="flex justify-center mb-4 print:hidden">
+                  {topThree[2].contestant.photo ? (
+                    <img
+                      src={topThree[2].contestant.photo}
+                      alt={topThree[2].contestant.name}
+                      className="w-20 h-24 rounded-lg object-cover border-4 border-white shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-20 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
+                      <span className="text-3xl">👸</span>
+                    </div>
+                  )}
                 </div>
-                <div className="bg-orange-200 h-24 rounded-b-lg flex items-center justify-center">
-                  <span className="text-3xl font-bold text-orange-700">3</span>
+                <div className="bg-orange-50 rounded-t-lg p-3 print:p-2 border-2 border-orange-300 h-32 print:h-20 flex flex-col justify-end">
+                  <div className="text-4xl print:text-2xl mb-1">🥉</div>
+                  <div className="text-sm print:text-xs font-bold text-orange-700">#{topThree[2].rank}</div>
+                  <h3 className="text-sm print:text-xs font-semibold text-gray-900 truncate">{topThree[2].contestant.name}</h3>
+                  <p className="text-xs print:text-xs text-gray-600 truncate">{topThree[2].contestant.course}</p>
+                  <div className="text-lg print:text-sm font-bold text-orange-700">{topThree[2].score}</div>
+                </div>
+                <div className="bg-orange-200 h-20 print:h-12 rounded-b-lg flex items-center justify-center">
+                  <span className="text-2xl print:text-lg font-bold text-orange-700">3</span>
                 </div>
               </div>
             </div>
@@ -356,12 +401,12 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
         )}
 
         {/* Statistics Summary */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 print:shadow-none print:border print:border-gray-300">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-2xl">📊</span>
+        <div className="bg-white rounded-lg shadow-lg p-4 print:p-2 mb-4 print:mb-2 print:shadow-none print:border print:border-gray-300">
+          <div className="flex items-center gap-3 mb-4 print:mb-2">
+            <div className="w-10 h-10 print:w-8 print:h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xl print:text-sm">📊</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Statistics Summary</h2>
+            <h2 className="text-xl print:text-lg font-bold text-gray-900">Statistics Summary</h2>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -414,12 +459,12 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
         </div>
 
         {/* Complete Rankings Table */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 print:shadow-none print:border print:border-gray-300 print:break-inside-avoid">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-2xl">📈</span>
+        <div className="bg-white rounded-lg shadow-lg p-4 print:p-2 mb-4 print:mb-2 print:shadow-none print:border print:border-gray-300 print:break-inside-avoid">
+          <div className="flex items-center gap-3 mb-4 print:mb-2">
+            <div className="w-10 h-10 print:w-8 print:h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xl print:text-sm">📈</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Complete Rankings</h2>
+            <h2 className="text-xl print:text-lg font-bold text-gray-900">Complete Rankings</h2>
           </div>
           
           <div className="overflow-x-auto">
@@ -427,7 +472,9 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
               <thead>
                 <tr className="bg-gradient-to-r from-gray-50 to-gray-100">
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contestant</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider print:hidden">Photo</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
                   <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Score</th>
@@ -450,6 +497,24 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
                         }`}>
                           {ranking.rank === 1 ? '🥇' : ranking.rank === 2 ? '🥈' : ranking.rank === 3 ? '🥉' : ranking.rank}
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap print:hidden">
+                        <div className="flex-shrink-0">
+                          {ranking.contestant.photo ? (
+                            <img
+                              src={ranking.contestant.photo}
+                              alt={ranking.contestant.name}
+                              className="w-12 h-16 rounded-lg object-cover border border-gray-200"
+                            />
+                          ) : (
+                            <div className="w-12 h-16 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg flex items-center justify-center border border-gray-200">
+                              <span className="text-xl">👸</span>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-bold text-indigo-600">Candidate {ranking.rank}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{ranking.contestant.name}</div>
@@ -478,13 +543,13 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
           </div>
         </div>
 
-        {/* Detailed Score Breakdown */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8 print:shadow-none print:border print:border-gray-300">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-2xl">📝</span>
+        {/* Detailed Score Breakdown - Hidden in print for single page */}
+        <div className="bg-white rounded-lg shadow-lg p-4 mb-4 print:hidden">
+          <div className="flex items-center gap-3 mb-4 print:mb-2">
+            <div className="w-10 h-10 print:w-8 print:h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xl print:text-sm">📝</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Detailed Score Breakdown</h2>
+            <h2 className="text-xl print:text-lg font-bold text-gray-900">Detailed Score Breakdown</h2>
           </div>
           
           {reportData.detailedScores.map((contestantData, idx) => {
@@ -565,13 +630,13 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
           })}
         </div>
 
-        {/* Judges Panel Information */}
-        <div className="bg-white rounded-lg shadow-lg p-6 print:shadow-none print:border print:border-gray-300">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
-              <span className="text-white text-2xl">⚖️</span>
+        {/* Judges Panel Information - Hidden in print for single page */}
+        <div className="bg-white rounded-lg shadow-lg p-4 print:hidden">
+          <div className="flex items-center gap-3 mb-4 print:mb-2">
+            <div className="w-10 h-10 print:w-8 print:h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xl print:text-sm">⚖️</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Judges Panel</h2>
+            <h2 className="text-xl print:text-lg font-bold text-gray-900">Judges Panel</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -607,60 +672,215 @@ export default function ComprehensiveReport({ params }: { params: { id: string }
         @media print {
           @page {
             size: A4;
-            margin: 20mm;
+            margin: 10mm;
           }
-          
+
           body.printing {
             background: white !important;
+            font-size: 12px !important;
+            line-height: 1.2 !important;
           }
-          
+
+          /* Make everything fit on one page */
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
+          }
+
           .print\\:hidden {
             display: none !important;
           }
-          
+
           .print\\:shadow-none {
             box-shadow: none !important;
           }
-          
+
           .print\\:bg-white {
             background-color: white !important;
           }
-          
+
           .print\\:text-black {
             color: black !important;
           }
-          
+
           .print\\:border {
             border-width: 1px !important;
           }
-          
+
           .print\\:border-gray-300 {
             border-color: #d1d5db !important;
           }
-          
+
           .print\\:break-inside-avoid {
             break-inside: avoid !important;
           }
-          
+
           .print\\:mt-12 {
-            margin-top: 3rem !important;
+            margin-top: 1rem !important;
           }
-          
+
           .shadow-lg, .shadow {
             box-shadow: none !important;
           }
-          
+
           .bg-gradient-to-r, .bg-gradient-to-br {
             background: white !important;
           }
-          
+
           .text-white {
             color: black !important;
           }
-          
+
           .bg-gradient-to-r.from-indigo-600.to-purple-600 {
             background: white !important;
             color: black !important;
+          }
+
+          /* Compact spacing for single page */
+          .mb-8, .mb-6, .mb-4, .mb-3, .mb-2 {
+            margin-bottom: 0.5rem !important;
+          }
+
+          .mt-8, .mt-6, .mt-4, .mt-3, .mt-2 {
+            margin-top: 0.5rem !important;
+          }
+
+          .py-8, .py-6, .py-4, .py-3, .py-2 {
+            padding-top: 0.25rem !important;
+            padding-bottom: 0.25rem !important;
+          }
+
+          .px-8, .px-6, .px-4, .px-3, .px-2 {
+            padding-left: 0.25rem !important;
+            padding-right: 0.25rem !important;
+          }
+
+          .p-8, .p-6, .p-4, .p-3, .p-2 {
+            padding: 0.25rem !important;
+          }
+
+          /* Smaller text for tables */
+          table {
+            font-size: 10px !important;
+          }
+
+          th, td {
+            padding: 4px 6px !important;
+          }
+
+          /* Compact header */
+          header {
+            padding: 1rem 0 !important;
+          }
+
+          h1 {
+            font-size: 24px !important;
+          }
+
+          h2 {
+            font-size: 18px !important;
+          }
+
+          h3 {
+            font-size: 14px !important;
+          }
+
+          /* Reduce image sizes */
+          img {
+            max-height: 80px !important;
+            max-width: 80px !important;
+          }
+
+          /* Compact grid layouts */
+          .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 0.25rem !important;
+          }
+
+          .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.25rem !important;
+          }
+
+          .grid-cols-4 {
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 0.125rem !important;
+          }
+
+          /* Compact spacing for all elements */
+          .gap-6 {
+            gap: 0.5rem !important;
+          }
+
+          .gap-4 {
+            gap: 0.25rem !important;
+          }
+
+          .gap-3 {
+            gap: 0.125rem !important;
+          }
+
+          /* Reduce podium dimensions */
+          .min-height-120px {
+            min-height: 80px !important;
+          }
+
+          /* Ensure no page breaks inside sections */
+          .print\\:break-inside-avoid {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+          }
+
+          /* Compact table cells */
+          tbody tr {
+            height: 24px !important;
+          }
+
+          /* Smaller font sizes for all text */
+          .text-xs { font-size: 9px !important; }
+          .text-sm { font-size: 10px !important; }
+          .text-base { font-size: 11px !important; }
+          .text-lg { font-size: 12px !important; }
+          .text-xl { font-size: 14px !important; }
+          .text-2xl { font-size: 16px !important; }
+          .text-3xl { font-size: 18px !important; }
+          .text-4xl { font-size: 20px !important; }
+
+          /* Force single page layout */
+          html, body {
+            height: 100% !important;
+            max-height: 100% !important;
+            overflow: visible !important;
+          }
+
+          /* Ensure report container fits on one page */
+          .report-container {
+            max-height: 100vh !important;
+            height: 100vh !important;
+            page-break-after: avoid !important;
+            page-break-before: avoid !important;
+            page-break-inside: avoid !important;
+          }
+
+          /* Scale down all elements proportionally for single page */
+          * {
+            transform-origin: top left !important;
+          }
+
+          /* Reduce line heights for more compact text */
+          p, div, span, h1, h2, h3, h4, h5, h6 {
+            line-height: 1.1 !important;
+          }
+
+          /* Reduce podium heights */
+          .h-56, .h-48, .h-40 {
+            height: auto !important;
+            min-height: 120px !important;
+          }
+
+          /* Compact main content */
+          main {
+            padding: 0.5rem 1rem !important;
           }
         }
       `}</style>

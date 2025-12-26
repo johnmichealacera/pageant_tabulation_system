@@ -336,13 +336,16 @@ export default function Home() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {eventData.event.contestants.map((contestant) => (
-                  <ContestantCard 
-                    key={contestant.id} 
-                    contestant={contestant} 
-                    onClick={() => handleContestantClick(contestant.id)}
-                  />
-                ))}
+                {eventData.event.contestants
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((contestant, index) => (
+                    <ContestantCard
+                      key={contestant.id}
+                      contestant={contestant}
+                      candidateNumber={index + 1}
+                      onClick={() => handleContestantClick(contestant.id)}
+                    />
+                  ))}
               </div>
             )}
           </div>

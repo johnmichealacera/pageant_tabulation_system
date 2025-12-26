@@ -38,6 +38,7 @@ interface ReportData {
     contestantId: string;
     score: number;
     rank: number;
+    number: number;
     contestant: any;
   }>;
   detailedScores: Array<{
@@ -246,8 +247,8 @@ export default function EventResults({ params }: { params: { id: string } }) {
         </div>
 
         {/* Statistics */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8 print:shadow-none">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Statistics</h2>
+        <div className="bg-white rounded-lg shadow p-4 print:p-2 mb-4 print:shadow-none">
+          <h2 className="text-xl print:text-lg font-bold text-gray-900 mb-3 print:mb-1">Statistics</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <p className="text-3xl font-bold text-indigo-600">{reportData.statistics.totalContestants}</p>
@@ -272,21 +273,44 @@ export default function EventResults({ params }: { params: { id: string } }) {
         </div>
 
         {/* Rankings */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8 print:shadow-none">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Final Rankings</h2>
+        <div className="bg-white rounded-lg shadow p-4 print:p-2 mb-4 print:shadow-none">
+          <h2 className="text-xl print:text-lg font-bold text-gray-900 mb-4 print:mb-2">Final Rankings</h2>
           
           {/* Top 3 Podium */}
           {reportData.rankings.length >= 3 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 print:gap-1 print:mb-2">
               {reportData.rankings.slice(0, 3).map((ranking) => (
-                <div key={ranking.contestantId} className="text-center p-6 border-2 rounded-lg">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full border-2 mb-4 ${getRankColor(ranking.rank)}`}>
-                    <span className="text-2xl">{getRankIcon(ranking.rank)}</span>
+                <div key={ranking.contestantId} className="text-center p-4 print:p-2 border-2 rounded-lg bg-gradient-to-br from-gray-50 to-white">
+                  {/* Profile Picture - Hidden in print */}
+                  <div className="flex justify-center mb-2 print:hidden">
+                    {ranking.contestant.photo ? (
+                      <img
+                        src={ranking.contestant.photo}
+                        alt={ranking.contestant.name}
+                        className="w-16 h-20 rounded-lg object-cover border-4 border-white shadow-lg"
+                      />
+                    ) : (
+                      <div className="w-16 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg flex items-center justify-center border-4 border-white shadow-lg">
+                        <span className="text-2xl">👸</span>
+                      </div>
+                    )}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{ranking.contestant.name}</h3>
-                  <p className="text-gray-600 mb-2">{ranking.contestant.course}</p>
-                  <div className="text-3xl font-bold text-indigo-600">{ranking.score}</div>
-                  <p className="text-sm text-gray-500">Total Score</p>
+
+                  {/* Rank Icon */}
+                  <div className={`inline-flex items-center justify-center w-12 h-12 print:w-10 print:h-10 rounded-full border-2 mb-2 print:mb-1 ${getRankColor(ranking.rank)}`}>
+                    <span className="text-lg print:text-sm">{getRankIcon(ranking.rank)}</span>
+                  </div>
+
+                  {/* Candidate Number */}
+                  <div className="text-base print:text-sm font-bold text-indigo-600 mb-1">
+                    Candidate {ranking.number}
+                  </div>
+
+                  {/* Name */}
+                  <h3 className="text-base print:text-sm font-semibold text-gray-900 mb-1">{ranking.contestant.name}</h3>
+                  <p className="text-xs print:text-xs text-gray-600 mb-2 print:mb-1">{ranking.contestant.course}</p>
+                  <div className="text-xl print:text-base font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{ranking.score}</div>
+                  <p className="text-xs text-gray-500">Total Score</p>
                 </div>
               ))}
             </div>
@@ -297,11 +321,13 @@ export default function EventResults({ params }: { params: { id: string } }) {
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contestant</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Score</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Rank</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider print:hidden w-16">Photo</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Candidate</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Name</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Course</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Total Score</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Percentage</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -309,22 +335,42 @@ export default function EventResults({ params }: { params: { id: string } }) {
                   const percentage = ((ranking.score / reportData.statistics.totalPossibleScore) * 100).toFixed(1);
                   return (
                     <tr key={ranking.contestantId} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${getRankColor(ranking.rank)}`}>
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <div className={`inline-flex items-center justify-center w-8 h-8 print:w-6 print:h-6 rounded-full text-xs print:text-xs font-bold ${getRankColor(ranking.rank)}`}>
                           {getRankIcon(ranking.rank)}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-3 py-2 whitespace-nowrap print:hidden">
+                        <div className="flex-shrink-0">
+                          {ranking.contestant.photo ? (
+                            <img
+                              src={ranking.contestant.photo}
+                              alt={ranking.contestant.name}
+                              className="w-8 h-10 rounded-lg object-cover border border-gray-200"
+                            />
+                          ) : (
+                            <div className="w-8 h-10 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg flex items-center justify-center border border-gray-200">
+                              <span className="text-sm">👸</span>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <div className="text-sm font-bold text-indigo-600">Candidate {ranking.number}</div>
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">{ranking.contestant.name}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-3 py-2 whitespace-nowrap">
                         <div className="text-sm text-gray-500">{ranking.contestant.course}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="text-lg font-bold text-indigo-600">{ranking.score}</div>
+                      <td className="px-3 py-2 whitespace-nowrap text-center">
+                        <div className="text-base print:text-sm font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{ranking.score}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="text-sm text-gray-600">{percentage}%</div>
+                      <td className="px-3 py-2 whitespace-nowrap text-center">
+                        <div className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                          {percentage}%
+                        </div>
                       </td>
                     </tr>
                   );
@@ -334,8 +380,8 @@ export default function EventResults({ params }: { params: { id: string } }) {
           </div>
         </div>
 
-        {/* Detailed Scores */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8 print:shadow-none">
+        {/* Detailed Scores - Hidden in print for single page */}
+        <div className="bg-white rounded-lg shadow p-6 mb-8 print:hidden">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Detailed Scores</h2>
           
           {reportData.detailedScores.map((contestantData) => (
@@ -400,8 +446,8 @@ export default function EventResults({ params }: { params: { id: string } }) {
           ))}
         </div>
 
-        {/* Judges Information */}
-        <div className="bg-white rounded-lg shadow p-6 print:shadow-none">
+        {/* Judges Information - Hidden in print for single page */}
+        <div className="bg-white rounded-lg shadow p-6 print:hidden">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Judges Panel</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {reportData.judges.map((judge) => (
@@ -417,17 +463,22 @@ export default function EventResults({ params }: { params: { id: string } }) {
         </div>
       </main>
 
-      {/* Print Styles */}
+      {/* Print Styles - Aggressive single-page optimization */}
       <style jsx global>{`
         @media print {
+          /* Hide non-essential sections */
           .print\\:shadow-none {
             box-shadow: none !important;
           }
           .print\\:hidden {
             display: none !important;
           }
+
+          /* Force white background */
           body {
             background: white !important;
+            font-size: 10px !important;
+            line-height: 1.1 !important;
           }
           .bg-gray-50 {
             background: white !important;
@@ -435,6 +486,101 @@ export default function EventResults({ params }: { params: { id: string } }) {
           .shadow {
             box-shadow: none !important;
           }
+
+          /* Aggressive spacing reduction */
+          .mb-8, .mb-6, .mb-4, .mb-3, .mb-2 {
+            margin-bottom: 2px !important;
+          }
+          .mt-8, .mt-6, .mt-4, .mt-3, .mt-2 {
+            margin-top: 2px !important;
+          }
+          .py-8, .py-6, .py-4, .py-3, .py-2 {
+            padding-top: 2px !important;
+            padding-bottom: 2px !important;
+          }
+          .px-8, .px-6, .px-4, .px-3, .px-2 {
+            padding-left: 2px !important;
+            padding-right: 2px !important;
+          }
+          .p-8, .p-6, .p-4, .p-3, .p-2 {
+            padding: 2px !important;
+          }
+
+          /* Compact headers */
+          h1 { font-size: 18px !important; margin-bottom: 2px !important; }
+          h2 { font-size: 14px !important; margin-bottom: 2px !important; }
+          h3 { font-size: 12px !important; margin-bottom: 2px !important; }
+
+          /* Ultra-compact tables */
+          table {
+            font-size: 8px !important;
+            margin-bottom: 2px !important;
+            table-layout: fixed !important;
+            width: 100% !important;
+          }
+          th, td {
+            padding: 2px 3px !important;
+            line-height: 1 !important;
+          }
+
+          /* Compact grid layouts */
+          .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1px !important;
+          }
+          .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1px !important;
+          }
+          .grid-cols-4 {
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 1px !important;
+          }
+
+          /* Reduce podium dimensions aggressively */
+          .h-48, .h-40, .h-32, .h-24 {
+            height: 50px !important;
+          }
+
+          /* Minimal main content spacing */
+          main {
+            padding: 4px !important;
+          }
+
+          /* Remove all borders and shadows for space */
+          .border, .border-2, .shadow, .shadow-lg, .rounded-lg {
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 1px !important;
+          }
+
+          /* Smaller icons and emojis */
+          .text-2xl, .text-3xl, .text-4xl, .text-5xl, .text-6xl, .text-7xl {
+            font-size: 10px !important;
+          }
+
+          /* Prevent page breaks */
+          .card, .bg-white, div {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+
+          /* Force single page layout */
+          .min-h-screen {
+            min-height: 100vh !important;
+            height: 100vh !important;
+            page-break-after: avoid !important;
+          }
+
+          /* Compact text scaling */
+          .text-xs { font-size: 8px !important; }
+          .text-sm { font-size: 9px !important; }
+          .text-base { font-size: 10px !important; }
+          .text-lg { font-size: 11px !important; }
+          .text-xl { font-size: 12px !important; }
+          .text-2xl { font-size: 13px !important; }
+          .text-3xl { font-size: 14px !important; }
+          .text-4xl { font-size: 15px !important; }
         }
       `}</style>
     </div>

@@ -243,7 +243,9 @@ export default function EventManagement({ params }: { params: { id: string } }) 
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {event.contestants.map((contestant) => (
+                {event.contestants
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((contestant, index) => (
                   <div key={contestant.id} className="bg-white rounded-lg shadow-md p-6">
                     <div className="text-center mb-4">
                       <div className="w-24 h-32 mx-auto bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
@@ -256,6 +258,11 @@ export default function EventManagement({ params }: { params: { id: string } }) 
                         ) : (
                           <span className="text-gray-400">No Photo</span>
                         )}
+                      </div>
+                      <div className="mb-2">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                          Candidate {index + 1}
+                        </span>
                       </div>
                       <h3 className="text-lg font-semibold text-gray-900">{contestant.name}</h3>
                       <p className="text-sm text-gray-600">Age: {contestant.age}</p>
@@ -311,13 +318,11 @@ export default function EventManagement({ params }: { params: { id: string } }) 
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {event.judges.map((judge) => (
+                {event.judges.map((judge, index) => (
                   <div key={judge.id} className="bg-white rounded-lg shadow-md p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{judge.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Judge {index + 1}</h3>
                     <p className="text-sm text-gray-600 mb-2">{judge.role}</p>
-                    {judge.user && (
-                      <p className="text-sm text-gray-500 mb-4">Email: {judge.user.email}</p>
-                    )}
+                    {/* Email hidden for privacy */}
                     <div className="flex space-x-2">
                       <button
                         onClick={() => router.push(`/admin/events/${event.id}/judges/${judge.id}/edit`)}
