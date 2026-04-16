@@ -109,17 +109,13 @@ export async function uploadToCloudinary(
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || '';
   const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || '';
 
-  if (!cloudinaryUrl || !uploadPreset || !apiKey) {
-    throw new Error('Cloudinary configuration is missing. Please check your environment variables.');
-  }
+  const useLocalUpload = !cloudinaryUrl || !uploadPreset || !apiKey;
 
   let optimizedFile: File | undefined;
   let optimizationInfo: CloudinaryUploadResult['optimizationInfo'];
 
-  // Check if WebP optimization should be applied
   if (enableWebPOptimization && isWebPSupported() && file.type.startsWith('image/')) {
     try {
-      // Convert to WebP with quality optimization
       const result = await convertToWebP(file, 0.85);
       optimizedFile = result.file;
       
@@ -140,11 +136,25 @@ export async function uploadToCloudinary(
     optimizedFile = file;
   }
 
-  // Upload to Cloudinary using the optimized file
-  const uploadedUrl = await handleFileChange(cloudinaryUrl, uploadPreset, apiKey, optimizedFile);
+  let uploadedUrl: string | undefined;
+
+  if (useLocalUpload) {
+    const formData = new FormData();
+    formData.append('file', optimizedFile as File);
+
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Upload failed' }));
+      throw new Error(err.error || 'Failed to upload image locally');
+    }
+    const data = await res.json();
+    uploadedUrl = data.url;
+  } else {
+    uploadedUrl = await handleFileChange(cloudinaryUrl, uploadPreset, apiKey, optimizedFile);
+  }
 
   if (!uploadedUrl || uploadedUrl.trim() === '') {
-    throw new Error('Failed to upload image to Cloudinary');
+    throw new Error('Failed to upload image');
   }
 
   return {

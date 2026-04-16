@@ -2,13 +2,15 @@
   "name": "pageant-tabulation",
   "version": "1.0.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "electron:build": "node electron/build.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -42,5 +44,9 @@
   ],
   "author": "",
   "license": "ISC",
-  "description": "Pageant Tabulation System for School College"
+  "description": "Pageant Tabulation System for School College",
+  "devDependencies": {
+    "electron": "^41.2.1",
+    "electron-builder": "^26.8.1"
+  }
 }

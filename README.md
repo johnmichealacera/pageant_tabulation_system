@@ -12,8 +12,8 @@ A comprehensive Next.js application for managing and tabulating school college b
 
 ### 👨‍💼 **Admin Dashboard**
 - **Event Management**: Create, edit, delete, and manage pageant events
-- **Contestant Management**: Add, edit, delete contestants with cloud-based photo uploads
-- **Image Upload**: Cloudinary integration with automatic WebP optimization for better performance
+- **Contestant Management**: Add, edit, delete contestants with photo uploads
+- **Image Upload**: Cloudinary upload for cloud deployment, automatic local upload fallback in desktop/offline mode
 - **Judge Management**: Create, edit, delete judge accounts with login credentials and password updates
 - **Category Management**: Add, edit, delete scoring categories with weights and max scores
 - **Event Activation**: Set active events visible to public
@@ -41,6 +41,7 @@ A comprehensive Next.js application for managing and tabulating school college b
 
 ### 📊 **Database & Data Management**
 - **PostgreSQL Database**: Production-ready data storage with Prisma ORM
+- **SQLite Desktop Database**: Bundled local database for offline desktop executable
 - **Real-time Calculations**: Automatic score calculations and rankings
 - **Data Integrity**: Proper relationships and constraints with cascade deletes
 - **Sample Data**: Pre-populated realistic sample data for testing
@@ -103,6 +104,39 @@ npm run dev
 
 7. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## 🖥️ Desktop Offline Build (Electron)
+
+This project now supports an offline Windows desktop build using Electron, while keeping the cloud deployment workflow intact.
+
+### What the desktop build includes
+- Local SQLite database (pre-seeded)
+- Offline authentication and scoring
+- Local image uploads to an `uploads/` folder
+- Windows executable in `dist/win-unpacked/`
+
+### Build command
+```bash
+npm run electron:build
+```
+
+### Output
+- `dist/win-unpacked/` - full Windows app folder (recommended for distribution)
+- `dist/Pageant-Tabulation-System-Windows.tar.gz` - compressed package of the app folder
+
+### Run on Windows
+1. Copy `dist/win-unpacked/` to the Windows machine.
+2. Open the folder.
+3. Run `Pageant Tabulation System.exe`.
+
+### Notes for WSL/Linux builders
+- If building from WSL/Linux, install Wine first for Windows packaging support.
+- The build script restores the normal PostgreSQL Prisma client after each desktop build so cloud development remains unaffected.
+
+### SmartScreen warning (Windows protected your PC)
+Unsigned `.exe` files can trigger SmartScreen on first run. This is expected for student/internal builds.
+- Click **More info**
+- Click **Run anyway**
+
 ## 🔑 Login Credentials
 
 ### Admin Account
@@ -122,8 +156,16 @@ npm run dev
 pageant-tabulation-system/
 ├── prisma/
 │   ├── schema.prisma           # Database schema
+│   ├── schema.desktop.prisma   # Desktop/offline SQLite schema
 │   ├── seed.ts                 # Sample data seeding
 │   └── migrations/             # Database migrations
+├── electron/
+│   ├── .env.desktop            # Desktop environment values
+│   ├── main.js                 # Electron app entry point
+│   ├── server.js               # Embedded Next.js production server
+│   ├── seed.js                 # Desktop SQLite seed script
+│   ├── build.js                # Desktop build orchestrator
+│   └── preload.js              # Electron preload script
 ├── src/
 │   ├── app/
 │   │   ├── admin/              # Admin dashboard pages
@@ -132,7 +174,8 @@ pageant-tabulation-system/
 │   │   ├── api/                # API routes
 │   │   │   ├── admin/          # Admin API endpoints
 │   │   │   ├── judge/          # Judge API endpoints
-│   │   │   └── public/         # Public API endpoints
+│   │   │   ├── public/         # Public API endpoints
+│   │   │   └── upload/         # Local desktop upload endpoint
 │   │   ├── globals.css         # Global styles
 │   │   ├── layout.tsx          # Root layout with favicon
 │   │   └── page.tsx            # Public homepage with event switcher
@@ -152,6 +195,7 @@ pageant-tabulation-system/
 │   └── favicon.svg             # Custom pageant crown favicon
 ├── .env                        # Environment variables
 ├── package.json                # Dependencies and scripts
+├── electron-builder.config.js  # Electron packaging configuration
 ├── tailwind.config.js          # Tailwind CSS configuration
 ├── tsconfig.json               # TypeScript configuration
 └── next.config.js              # Next.js configuration
@@ -194,6 +238,7 @@ The application includes comprehensive sample data:
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 - `npm run db:seed` - Seed database with sample data
+- `npm run electron:build` - Build offline Windows desktop package
 - `npx prisma studio` - Open Prisma database browser
 - `npx prisma migrate dev` - Run database migrations
 
@@ -205,8 +250,10 @@ The application includes comprehensive sample data:
 - **NextAuth.js** - Authentication and session management
 - **Prisma** - Modern database toolkit and ORM
 - **PostgreSQL** - Production-ready relational database
+- **SQLite** - Offline desktop database for Electron builds
 - **bcryptjs** - Password hashing and security
 - **React** - UI library for building components
+- **Electron** - Windows desktop executable packaging
 
 ## 🎨 Key Features Explained
 
@@ -332,6 +379,7 @@ Built with modern web technologies for educational institutions to manage their 
 
 ### Image Upload & Optimization
 - ✅ Cloudinary integration for cloud-based image storage
+- ✅ Local image upload fallback for offline Electron build
 - ✅ Automatic WebP conversion for better performance
 - ✅ Image optimization with quality compression
 - ✅ Drag-and-drop upload interface
