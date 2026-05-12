@@ -63,23 +63,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteEvent = async (eventId: string) => {
-    if (!confirm('Are you sure you want to delete this event? This will delete all associated data.')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/admin/events/${eventId}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        fetchEvents();
-      }
-    } catch (error) {
-      console.error('Error deleting event:', error);
-    }
-  };
-
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -192,12 +175,6 @@ export default function AdminDashboard() {
                         Set Active
                       </button>
                     )}
-                    <button
-                      onClick={() => handleDeleteEvent(event.id)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium"
-                    >
-                      Delete
-                    </button>
                   </div>
                 </div>
               ))}
