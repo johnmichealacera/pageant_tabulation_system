@@ -317,6 +317,23 @@ export default function Home() {
                 </svg>
               </button>
 
+              {/* Stage View */}
+              <button
+                onClick={() => window.open(`/live?eventId=${eventData.event.id}`, '_blank')}
+                className="relative flex items-center gap-1.5 py-2 px-3.5 rounded-xl text-sm font-semibold
+                  bg-gradient-to-r from-gold-500 to-amber-400 text-white shadow-md
+                  hover:from-gold-400 hover:to-amber-300 transition-all duration-200 whitespace-nowrap
+                  ring-2 ring-gold-400/30 hover:ring-gold-400/60"
+                title="Open stage presentation view"
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span className="hidden sm:inline">Stage View</span>
+                <span className="sm:hidden">Stage</span>
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-white animate-pulse" />
+              </button>
+
               {/* Dark mode toggle */}
               <ThemeToggle />
 
