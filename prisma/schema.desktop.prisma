@@ -138,6 +138,24 @@ model Category {
   updatedAt DateTime @updatedAt
 }
 
+model EventTemplate {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  categories  TemplateCategory[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model TemplateCategory {
+  id         String        @id @default(cuid())
+  name       String
+  maxScore   Int
+  weight     Float
+  templateId String
+  template   EventTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+}
+
 model Score {
   id    String @id @default(cuid())
   score Int

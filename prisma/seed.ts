@@ -260,6 +260,63 @@ async function main() {
   }
 
   console.log('Created sample scores')
+
+  // ── Event Templates ──────────────────────────────────────────────────────
+  const templateDefs = [
+    {
+      id: 'tpl-miss-universe',
+      name: 'Miss Universe Format',
+      description: 'Classic international pageant format with interview, swimwear, and evening gown segments.',
+      categories: [
+        { name: 'Preliminary Interview',  maxScore: 30, weight: 0.30 },
+        { name: 'Swimwear / Activewear',  maxScore: 25, weight: 0.20 },
+        { name: 'Evening Gown',           maxScore: 30, weight: 0.30 },
+        { name: 'Question & Answer',      maxScore: 25, weight: 0.20 },
+      ],
+    },
+    {
+      id: 'tpl-campus-royalty',
+      name: 'Campus Royalty',
+      description: 'Standard college/university pageant format balancing talent, intelligence, and poise.',
+      categories: [
+        { name: 'Smart Casual Wear',       maxScore: 20, weight: 0.15 },
+        { name: 'Talent Showcase',         maxScore: 25, weight: 0.20 },
+        { name: 'Evening Gown',            maxScore: 25, weight: 0.25 },
+        { name: 'Intelligence & Q&A',      maxScore: 30, weight: 0.30 },
+        { name: 'Community Advocacy',      maxScore: 15, weight: 0.10 },
+      ],
+    },
+    {
+      id: 'tpl-binibining-pilipinas',
+      name: 'Binibining Pilipinas Style',
+      description: 'Filipino national pageant format celebrating heritage, advocacy, and elegance.',
+      categories: [
+        { name: 'National Costume',        maxScore: 25, weight: 0.20 },
+        { name: 'Swimwear',                maxScore: 20, weight: 0.15 },
+        { name: 'Evening Gown',            maxScore: 25, weight: 0.25 },
+        { name: 'Personality Interview',   maxScore: 25, weight: 0.25 },
+        { name: 'Social Impact & Advocacy',maxScore: 20, weight: 0.15 },
+      ],
+    },
+  ]
+
+  for (const tpl of templateDefs) {
+    const existing = await prisma.eventTemplate.findUnique({ where: { id: tpl.id } })
+    if (!existing) {
+      await prisma.eventTemplate.create({
+        data: {
+          id: tpl.id,
+          name: tpl.name,
+          description: tpl.description,
+          categories: { create: tpl.categories },
+        },
+      })
+      console.log(`Created template: ${tpl.name}`)
+    } else {
+      console.log(`Template already exists: ${tpl.name}`)
+    }
+  }
+
   console.log('\n🎉 Sample data created successfully!')
   console.log('\n📋 Login Credentials:')
   console.log('👨‍💼 Admin: admin@pageant.com / admin123')

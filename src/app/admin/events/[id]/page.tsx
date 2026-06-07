@@ -44,6 +44,17 @@ export default function EventManagement({ params }: { params: { id: string } }) 
   const [activeTab, setActiveTab]   = useState<Tab>('contestants');
   const [deleting, setDeleting]     = useState<string | null>(null);
 
+  // Template modals
+  const [showSaveModal, setShowSaveModal]   = useState(false);
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [tplName, setTplName]               = useState('');
+  const [tplDesc, setTplDesc]               = useState('');
+  const [tplSaving, setTplSaving]           = useState(false);
+  const [tplError, setTplError]             = useState('');
+  const [templates, setTemplates]           = useState<Array<{ id: string; name: string; description: string | null; categories: Array<{ name: string; maxScore: number; weight: number }> }>>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [applyingTpl, setApplyingTpl]       = useState<string | null>(null);
+
   useEffect(() => {
     if (status === 'loading') return;
     const role = (session?.user as any)?.role;
@@ -100,6 +111,75 @@ export default function EventManagement({ params }: { params: { id: string } }) 
     const res = await fetch(`/api/admin/events/${params.id}/categories/${id}`, { method: 'DELETE' });
     if (res.ok) fetchEvent(); else alert((await res.json()).error || 'Failed');
     setDeleting(null);
+  };
+
+  const openSaveModal = () => {
+    setTplName('');
+    setTplDesc('');
+    setTplError('');
+    setShowSaveModal(true);
+  };
+
+  const handleSaveAsTemplate = async () => {
+    if (!tplName.trim()) { setTplError('Template name is required.'); return; }
+    if (!event || event.categories.length === 0) { setTplError('This event has no categories to save.'); return; }
+    setTplSaving(true);
+    setTplError('');
+    const res = await fetch('/api/admin/templates', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: tplName.trim(),
+        description: tplDesc.trim() || null,
+        categories: event.categories.map(c => ({ name: c.name, maxScore: c.maxScore, weight: c.weight })),
+      }),
+    });
+    if (res.ok) {
+      setShowSaveModal(false);
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setTplError(d.error ?? 'Failed to save template.');
+    }
+    setTplSaving(false);
+  };
+
+  const openApplyModal = async () => {
+    setTplError('');
+    setShowApplyModal(true);
+    setLoadingTemplates(true);
+    const res = await fetch('/api/admin/templates');
+    if (res.ok) setTemplates(await res.json());
+    setLoadingTemplates(false);
+  };
+
+  const handleApplyTemplate = async (templateId: string) => {
+    const hasCategories = event && event.categories.length > 0;
+    const hasScores = event && event._count.scores > 0;
+
+    if (hasScores) {
+      alert('Cannot apply a template — scores already exist for this event. Remove all scores first.');
+      return;
+    }
+
+    const replace = hasCategories
+      ? confirm('This event already has categories. Replace them all with the template?')
+      : false;
+
+    setApplyingTpl(templateId);
+    const res = await fetch(`/api/admin/events/${params.id}/apply-template`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ templateId, replace }),
+    });
+
+    if (res.ok) {
+      setShowApplyModal(false);
+      fetchEvent();
+    } else {
+      const d = await res.json().catch(() => ({}));
+      alert(d.error ?? 'Failed to apply template.');
+    }
+    setApplyingTpl(null);
   };
 
   if (status === 'loading' || loading) {
@@ -344,12 +424,36 @@ export default function EventManagement({ params }: { params: { id: string } }) 
           {/* ── Categories ── */}
           {activeTab === 'categories' && (
             <motion.div key="categories" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
-              <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
                 <h2 className="font-semibold text-[var(--text-primary)]">
                   Categories <span className="text-[var(--text-muted)] font-normal">({event.categories.length})</span>
                 </h2>
-                <button onClick={() => router.push(`/admin/events/${event.id}/categories/new`)}
-                  className="btn-primary py-2 px-3 text-sm">+ Add</button>
+                <div className="flex gap-2">
+                  <button onClick={openApplyModal}
+                    className="py-2 px-3 text-sm rounded-lg font-medium border transition-all duration-200
+                      bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400
+                      border-violet-200 dark:border-violet-800 hover:bg-violet-100 dark:hover:bg-violet-900/30
+                      flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Apply Template
+                  </button>
+                  {event.categories.length > 0 && (
+                    <button onClick={openSaveModal}
+                      className="py-2 px-3 text-sm rounded-lg font-medium border transition-all duration-200
+                        bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400
+                        border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/30
+                        flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                      </svg>
+                      Save as Template
+                    </button>
+                  )}
+                  <button onClick={() => router.push(`/admin/events/${event.id}/categories/new`)}
+                    className="btn-primary py-2 px-3 text-sm">+ Add</button>
+                </div>
               </div>
 
               {/* Weight validation */}
@@ -497,6 +601,124 @@ export default function EventManagement({ params }: { params: { id: string } }) 
 
         </AnimatePresence>
       </main>
+
+      {/* ── Save as Template Modal ── */}
+      <AnimatePresence>
+        {showSaveModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setShowSaveModal(false)}>
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: -8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-2xl w-full max-w-md">
+              <div className="px-6 pt-6 pb-4 border-b border-[var(--border)]">
+                <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">Save as Template</h2>
+                <p className="text-xs text-[var(--text-muted)] mt-1">
+                  Saves the {event.categories.length} current {event.categories.length === 1 ? 'category' : 'categories'} as a reusable template.
+                </p>
+              </div>
+              <div className="px-6 py-5 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-1.5">
+                    Template Name *
+                  </label>
+                  <input value={tplName} onChange={e => setTplName(e.target.value)}
+                    placeholder="e.g. Standard Pageant Format"
+                    className="form-input" autoFocus />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide mb-1.5">
+                    Description
+                  </label>
+                  <input value={tplDesc} onChange={e => setTplDesc(e.target.value)}
+                    placeholder="Optional note about this template"
+                    className="form-input" />
+                </div>
+                {tplError && (
+                  <p className="text-sm text-rose-500 bg-rose-50 dark:bg-rose-900/20 rounded-lg px-3 py-2">{tplError}</p>
+                )}
+              </div>
+              <div className="px-6 pb-6 flex gap-2 justify-end">
+                <button onClick={() => setShowSaveModal(false)} className="btn-secondary py-2 px-4 text-sm">Cancel</button>
+                <button onClick={handleSaveAsTemplate} disabled={tplSaving}
+                  className="py-2 px-4 text-sm rounded-lg font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition-all disabled:opacity-60">
+                  {tplSaving ? 'Saving…' : 'Save Template'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Apply Template Modal ── */}
+      <AnimatePresence>
+        {showApplyModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setShowApplyModal(false)}>
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: -8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-2xl w-full max-w-md">
+              <div className="px-6 pt-6 pb-4 border-b border-[var(--border)]">
+                <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">Apply Template</h2>
+                <p className="text-xs text-[var(--text-muted)] mt-1">Choose a template to load its categories into this event.</p>
+              </div>
+              <div className="px-6 py-4 max-h-80 overflow-y-auto">
+                {loadingTemplates ? (
+                  <div className="flex justify-center py-8">
+                    <div className="w-6 h-6 rounded-full border-2 border-violet-400 border-t-transparent animate-spin" />
+                  </div>
+                ) : templates.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-[var(--text-secondary)] text-sm">No templates yet.</p>
+                    <button onClick={() => { setShowApplyModal(false); router.push('/admin/templates'); }}
+                      className="mt-3 text-xs text-violet-500 hover:text-violet-700 font-medium">
+                      Create your first template →
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {templates.map(t => (
+                      <button key={t.id} onClick={() => handleApplyTemplate(t.id)}
+                        disabled={applyingTpl === t.id}
+                        className="w-full text-left px-4 py-3 rounded-xl border border-[var(--border)]
+                          bg-[var(--bg-base)] hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20
+                          transition-all duration-200 disabled:opacity-50 group">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-sm text-[var(--text-primary)] group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors">
+                              {t.name}
+                            </p>
+                            {t.description && (
+                              <p className="text-xs text-[var(--text-muted)] mt-0.5">{t.description}</p>
+                            )}
+                          </div>
+                          <span className="text-xs text-[var(--text-muted)] shrink-0 ml-3">
+                            {applyingTpl === t.id ? 'Applying…' : `${t.categories.length} cat.`}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="px-6 pb-5 pt-3 border-t border-[var(--border)] flex justify-between items-center">
+                <button onClick={() => { setShowApplyModal(false); router.push('/admin/templates'); }}
+                  className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                  Manage templates →
+                </button>
+                <button onClick={() => setShowApplyModal(false)} className="btn-secondary py-2 px-4 text-sm">
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
