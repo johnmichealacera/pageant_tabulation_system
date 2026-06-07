@@ -72,7 +72,11 @@ export async function GET() {
         score,
         contestant: activeEvent.contestants.find((c: any) => c.id === contestantId)
       }))
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        // Tie-breaker: alphabetical by name for deterministic ordering
+        return (a.contestant?.name ?? '').localeCompare(b.contestant?.name ?? '');
+      })
       .map((item, index) => ({
         ...item,
         rank: index + 1

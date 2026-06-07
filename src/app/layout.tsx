@@ -1,21 +1,39 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Playfair_Display, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+})
 
 export const viewport: Viewport = {
-  themeColor: '#4F46E5',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F59E0B' },
+    { media: '(prefers-color-scheme: dark)',  color: '#0A0A0F' },
+  ],
   width: 'device-width',
   initialScale: 1,
 }
 
 export const metadata: Metadata = {
   title: 'Pageant Tabulation System',
-  description: 'School College Pageant Tabulation and Scoring System',
+  description: 'Professional Pageant Scoring & Tabulation Platform',
   manifest: '/manifest.json',
-  themeColor: '#4F46E5',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -27,7 +45,7 @@ export const metadata: Metadata = {
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-status-bar-style': 'black-translucent',
   },
 }
 
@@ -37,7 +55,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${playfair.variable} ${jetbrains.variable}`}
+    >
       <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>

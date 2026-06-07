@@ -87,7 +87,10 @@ export async function GET(
           number: contestant?.number || 0
         };
       })
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.number - b.number; // tie-breaker: lower candidate number wins
+      })
       .map((item, index) => ({
         ...item,
         rank: index + 1

@@ -2,7 +2,8 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ContestantData {
   contestant: {
@@ -26,106 +27,180 @@ interface ContestantData {
   judgeId: string;
 }
 
+type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+
+function draftKey(contestantId: string, judgeId: string) {
+  return `score_draft_${judgeId}_${contestantId}`;
+}
+
 export default function ScoreContestant({ params }: { params: { contestantId: string } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [contestantData, setContestantData] = useState<ContestantData | null>(null);
   const [scores, setScores] = useState<{ [categoryId: string]: number }>({});
+  const [focusedIndex, setFocusedIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scoresRef = useRef(scores);
+
+  useEffect(() => { scoresRef.current = scores; }, [scores]);
 
   useEffect(() => {
     if (status === 'loading') return;
-    
-    const userRole = (session?.user as any)?.role;
-    if (!session || userRole !== 'JUDGE') {
-      router.push('/auth/signin');
-      return;
-    }
-
+    const role = (session?.user as any)?.role;
+    if (!session || role !== 'JUDGE') { router.push('/auth/signin'); return; }
     fetchContestantData();
-  }, [session, status, router, params.contestantId]);
+  }, [session, status]);
 
   const fetchContestantData = async () => {
     try {
-      const response = await fetch(`/api/judge/contestant/${params.contestantId}`);
-      if (response.ok) {
-        const data = await response.json();
+      const res = await fetch(`/api/judge/contestant/${params.contestantId}`);
+      if (res.ok) {
+        const data: ContestantData = await res.json();
         setContestantData(data);
-        
-        // Initialize scores with existing scores
-        const initialScores: { [categoryId: string]: number } = {};
-        data.existingScores.forEach((score: any) => {
-          initialScores[score.categoryId] = score.score;
+
+        // Merge: existingScores > localStorage draft > empty
+        const stored = localStorage.getItem(draftKey(params.contestantId, data.judgeId));
+        const draft: Record<string, number> = stored ? JSON.parse(stored) : {};
+
+        const initial: Record<string, number> = {};
+        data.existingScores.forEach(s => { initial[s.categoryId] = s.score; });
+        // Draft overrides only if it has a value and no existing score
+        Object.entries(draft).forEach(([catId, val]) => {
+          if (!(catId in initial)) initial[catId] = val;
         });
-        setScores(initialScores);
-      } else if (response.status === 404) {
-        setError('Contestant not found or you are not authorized to score this contestant');
+        setScores(initial);
+      } else if (res.status === 404) {
+        setError('Contestant not found or you are not authorized');
       } else {
         setError('Failed to load contestant data');
       }
-    } catch (error) {
-      console.error('Error fetching contestant data:', error);
+    } catch {
       setError('Failed to load contestant data');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleScoreChange = (categoryId: string, score: number) => {
-    setScores(prev => ({
-      ...prev,
-      [categoryId]: score
-    }));
+  const persistDraft = useCallback((newScores: Record<string, number>, judgeId: string) => {
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      localStorage.setItem(draftKey(params.contestantId, judgeId), JSON.stringify(newScores));
+      setSaveState('saved');
+      setTimeout(() => setSaveState('idle'), 2000);
+    }, 800);
+  }, [params.contestantId]);
+
+  const handleScoreChange = (categoryId: string, value: number) => {
+    const category = contestantData?.categories.find(c => c.id === categoryId);
+    if (!category) return;
+    const clamped = Math.min(Math.max(0, value), category.maxScore);
+    const rounded = Math.round(clamped * 2) / 2; // snap to 0.5
+    const next = { ...scoresRef.current, [categoryId]: rounded };
+    setScores(next);
+    setSaveState('saving');
+    if (contestantData) persistDraft(next, contestantData.judgeId);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!contestantData) return;
+    const categories = contestantData.categories;
 
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'Enter') return;
+
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'Tab': {
+          if (e.key === 'Tab' && tag === 'INPUT') return; // let browser handle
+          e.preventDefault();
+          setFocusedIndex(i => (i + 1) % categories.length);
+          break;
+        }
+        case 'ArrowLeft': {
+          e.preventDefault();
+          setFocusedIndex(i => (i - 1 + categories.length) % categories.length);
+          break;
+        }
+        case 'ArrowUp': {
+          e.preventDefault();
+          const catUp = categories[focusedIndex];
+          if (catUp) handleScoreChange(catUp.id, (scoresRef.current[catUp.id] || 0) + 0.5);
+          break;
+        }
+        case 'ArrowDown': {
+          e.preventDefault();
+          const catDown = categories[focusedIndex];
+          if (catDown) handleScoreChange(catDown.id, (scoresRef.current[catDown.id] || 0) - 0.5);
+          break;
+        }
+        case 'Enter': {
+          const allEntered = categories.every(c => (scoresRef.current[c.id] ?? 0) > 0);
+          if (allEntered && tag !== 'BUTTON') {
+            e.preventDefault();
+            submitScores();
+          }
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [contestantData, focusedIndex]);
+
+  const submitScores = async () => {
+    setSaveState('saving');
     try {
-      const response = await fetch(`/api/judge/contestant/${params.contestantId}/scores`, {
+      const res = await fetch(`/api/judge/contestant/${params.contestantId}/scores`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ scores }),
       });
-
-      if (response.ok) {
+      if (res.ok) {
+        // Clear draft on successful submit
+        if (contestantData) {
+          localStorage.removeItem(draftKey(params.contestantId, contestantData.judgeId));
+        }
         router.push('/judge');
       } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to save scores');
+        const err = await res.json();
+        alert(err.error || 'Failed to save scores');
+        setSaveState('error');
       }
-    } catch (error) {
-      console.error('Error saving scores:', error);
+    } catch {
       alert('Failed to save scores');
-    } finally {
-      setSaving(false);
+      setSaveState('error');
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitScores();
   };
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)]">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 mx-auto rounded-full border-2 border-violet-400 border-t-transparent animate-spin" />
+          <p className="text-[var(--text-secondary)] text-sm">Loading contestant…</p>
+        </div>
       </div>
     );
   }
 
   if (error || !contestantData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-base)]">
         <div className="text-center">
-          <div className="text-xl font-semibold text-gray-900 mb-4">
-            {error || 'Contestant Not Found'}
-          </div>
-          <button
-            onClick={() => router.push('/judge')}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md font-medium"
-          >
+          <p className="text-lg font-semibold text-[var(--text-primary)] mb-4">{error || 'Contestant Not Found'}</p>
+          <button onClick={() => router.push('/judge')} className="btn-primary px-6 py-3">
             Back to Dashboard
           </button>
         </div>
@@ -133,134 +208,311 @@ export default function ScoreContestant({ params }: { params: { contestantId: st
     );
   }
 
-  const allScoresEntered = contestantData.categories.every(category => 
-    scores[category.id] && scores[category.id] > 0
-  );
+  const { contestant, categories } = contestantData;
+  const allScoresEntered = categories.every(c => (scores[c.id] ?? 0) > 0);
+  const completedCount = categories.filter(c => (scores[c.id] ?? 0) > 0).length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--bg-base)]">
       {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Score Contestant</h1>
-              <p className="text-gray-600">Enter your scores for {contestantData.contestant.name}</p>
+      <header className="bg-[var(--bg-surface)] border-b border-[var(--border)] shadow-[var(--shadow-sm)]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push('/judge')}
+                className="btn-secondary p-2"
+                aria-label="Back"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div>
+                <h1 className="font-semibold text-[var(--text-primary)] text-base">Score Contestant</h1>
+                <p className="text-xs text-[var(--text-muted)]">
+                  {completedCount}/{categories.length} categories scored
+                </p>
+              </div>
             </div>
-            <button
-              onClick={() => router.push('/judge')}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              Back to Dashboard
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Auto-save indicator */}
+              <AnimatePresence>
+                {saveState === 'saving' && (
+                  <motion.span
+                    key="saving"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-xs text-[var(--text-muted)] flex items-center gap-1"
+                  >
+                    <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Saving…
+                  </motion.span>
+                )}
+                {saveState === 'saved' && (
+                  <motion.span
+                    key="saved"
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Draft saved
+                  </motion.span>
+                )}
+              </AnimatePresence>
+
+              {/* Keyboard shortcuts hint */}
+              <button
+                onClick={() => setShowShortcuts(s => !s)}
+                className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] hidden sm:flex items-center gap-1 px-2 py-1 rounded border border-[var(--border)] transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Shortcuts
+              </button>
+            </div>
+          </div>
+
+          {/* Keyboard shortcuts panel */}
+          <AnimatePresence>
+            {showShortcuts && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="pb-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                  {[
+                    { keys: '← →', action: 'Switch category' },
+                    { keys: '↑ ↓', action: 'Score ±0.5' },
+                    { keys: 'Enter', action: 'Submit scores' },
+                    { keys: 'Tab', action: 'Next category' },
+                  ].map(({ keys, action }) => (
+                    <div key={keys} className="flex items-center gap-1.5">
+                      <kbd className="px-1.5 py-0.5 rounded bg-[var(--bg-muted)] border border-[var(--border)] font-mono text-[var(--text-secondary)]">
+                        {keys}
+                      </kbd>
+                      <span className="text-[var(--text-muted)]">{action}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Progress bar */}
+          <div className="pb-1">
+            <div className="w-full bg-[var(--bg-muted)] rounded-full h-1">
+              <motion.div
+                className="h-1 rounded-full bg-gradient-to-r from-violet-500 to-violet-600"
+                animate={{ width: `${(completedCount / categories.length) * 100}%` }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              />
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contestant Info */}
+      {/* Main */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Contestant sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-6 sticky top-8">
-              <div className="text-center">
-                <div className="w-32 h-40 mx-auto bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                  {contestantData.contestant.photo ? (
+            <div className="card sticky top-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative mb-4">
+                  {contestant.photo ? (
                     <img
-                      src={contestantData.contestant.photo}
-                      alt={contestantData.contestant.name}
-                      className="w-full h-full object-cover rounded-lg"
+                      src={contestant.photo}
+                      alt={contestant.name}
+                      className="w-28 h-36 rounded-xl object-cover ring-2 ring-violet-400"
                     />
                   ) : (
-                    <span className="text-gray-400">No Photo</span>
+                    <div className="w-28 h-36 rounded-xl bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/20 dark:to-violet-800/20 flex items-center justify-center ring-2 ring-violet-400">
+                      <span className="text-5xl">👸</span>
+                    </div>
+                  )}
+                  {allScoresEntered && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-2 -right-2 w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center"
+                    >
+                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </motion.div>
                   )}
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  {contestantData.contestant.name}
-                </h2>
-                <div className="space-y-1 text-sm text-gray-600">
-                  <p>Age: {contestantData.contestant.age}</p>
-                  <p>{contestantData.contestant.course}</p>
-                  <p>{contestantData.contestant.year}</p>
+                <h2 className="font-display text-xl font-bold text-[var(--text-primary)]">{contestant.name}</h2>
+                <p className="text-sm text-[var(--text-secondary)] mt-0.5">{contestant.course}</p>
+                <p className="text-xs text-[var(--text-muted)]">{contestant.year} · Age {contestant.age}</p>
+
+                {/* Category quick-nav */}
+                <div className="w-full mt-4 space-y-1">
+                  {categories.map((cat, i) => {
+                    const scored = (scores[cat.id] ?? 0) > 0;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setFocusedIndex(i)}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-all duration-150 ${
+                          focusedIndex === i
+                            ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 font-semibold'
+                            : 'text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]'
+                        }`}
+                      >
+                        <span className="truncate">{cat.name}</span>
+                        {scored ? (
+                          <span className="score-number text-xs font-bold text-emerald-600 dark:text-emerald-400 ml-2 shrink-0">
+                            {scores[cat.id]}
+                          </span>
+                        ) : (
+                          <span className="w-2 h-2 rounded-full bg-[var(--border)] shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Scoring Form */}
+          {/* Scoring form */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow">
-              <form onSubmit={handleSubmit} className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Scoring Categories</h3>
-                
-                <div className="space-y-6">
-                  {contestantData.categories.map((category) => (
-                    <div key={category.id} className="border-b border-gray-200 pb-6 last:border-b-0">
-                      <div className="flex justify-between items-center mb-3">
-                        <h4 className="text-md font-medium text-gray-900">{category.name}</h4>
-                        <div className="text-sm text-gray-500">
-                          Max Score: {category.maxScore} • Weight: {(category.weight * 100).toFixed(0)}%
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-4">
+                {categories.map((category, i) => {
+                  const score = scores[category.id] ?? 0;
+                  const pct = category.maxScore > 0 ? (score / category.maxScore) * 100 : 0;
+                  const isFocused = focusedIndex === i;
+
+                  return (
+                    <motion.div
+                      key={category.id}
+                      layout
+                      onClick={() => setFocusedIndex(i)}
+                      className={`card cursor-pointer transition-all duration-200 ${
+                        isFocused
+                          ? 'border-violet-400 dark:border-violet-500 shadow-[0_0_0_2px_rgba(139,92,246,0.15)]'
+                          : 'hover:border-[var(--text-muted)]'
+                      }`}
+                    >
+                      {/* Category header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            {isFocused && (
+                              <motion.div
+                                layoutId="focus-dot"
+                                className="w-2 h-2 rounded-full bg-violet-500"
+                              />
+                            )}
+                            <h4 className={`font-semibold ${isFocused ? 'text-violet-700 dark:text-violet-300' : 'text-[var(--text-primary)]'}`}>
+                              {category.name}
+                            </h4>
+                          </div>
+                          <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                            Weight: {(category.weight * 100).toFixed(0)}% · Max: {category.maxScore}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className={`score-number text-3xl font-bold transition-colors ${
+                            score > 0 ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'
+                          }`}>
+                            {score > 0 ? score.toFixed(1) : '—'}
+                          </div>
+                          {score > 0 && (
+                            <div className="text-xs text-[var(--text-muted)]">
+                              {pct.toFixed(0)}%
+                            </div>
+                          )}
                         </div>
                       </div>
-                      
-                      <div className="flex items-center space-x-4">
+
+                      {/* Slider */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-xs text-[var(--text-muted)] w-4">0</span>
                         <input
                           type="range"
                           min="0"
                           max={category.maxScore}
                           step="0.5"
-                          value={scores[category.id] || 0}
+                          value={score}
                           onChange={(e) => handleScoreChange(category.id, parseFloat(e.target.value))}
-                          className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                          onFocus={() => setFocusedIndex(i)}
+                          className="flex-1 accent-violet-500 cursor-pointer h-2"
+                          aria-label={`${category.name} score`}
                         />
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="number"
-                            min="0"
-                            max={category.maxScore}
-                            step="0.5"
-                            value={scores[category.id] || ''}
-                            onChange={(e) => handleScoreChange(category.id, parseFloat(e.target.value) || 0)}
-                            className="w-20 px-3 py-2 border border-gray-300 rounded-md text-center focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="0"
-                          />
-                          <span className="text-sm text-gray-500">/ {category.maxScore}</span>
-                        </div>
+                        <span className="text-xs text-[var(--text-muted)] w-6 text-right">{category.maxScore}</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max={category.maxScore}
+                          step="0.5"
+                          value={score || ''}
+                          onChange={(e) => handleScoreChange(category.id, parseFloat(e.target.value) || 0)}
+                          onFocus={() => setFocusedIndex(i)}
+                          className="w-16 text-center text-sm px-2 py-1.5 rounded-lg border border-[var(--border)]
+                            bg-[var(--bg-base)] text-[var(--text-primary)]
+                            focus:outline-none focus:ring-2 focus:ring-violet-400 score-number"
+                          placeholder="0"
+                        />
                       </div>
-                      
-                      {scores[category.id] > 0 && (
-                        <div className="mt-2 text-sm text-gray-600">
-                          Score: {scores[category.id]} ({((scores[category.id] / category.maxScore) * 100).toFixed(1)}%)
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
 
-                <div className="mt-8 flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={() => router.push('/judge')}
-                    className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Cancel
-                  </button>
+                      {/* Progress fill */}
+                      <div className="w-full bg-[var(--bg-muted)] rounded-full h-1">
+                        <motion.div
+                          className="h-1 rounded-full bg-gradient-to-r from-violet-400 to-violet-600"
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Submit */}
+              <div className="mt-6 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => router.push('/judge')}
+                  className="btn-secondary py-2.5 px-5"
+                >
+                  Cancel
+                </button>
+
+                <div className="flex items-center gap-3">
+                  {!allScoresEntered && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 hidden sm:block">
+                      Score all {categories.length} categories to submit
+                    </p>
+                  )}
                   <button
                     type="submit"
-                    disabled={saving || !allScoresEntered}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                    disabled={saveState === 'saving' || !allScoresEntered}
+                    className={`py-2.5 px-6 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm
+                      ${allScoresEntered
+                        ? 'bg-violet-600 hover:bg-violet-700 text-white active:scale-95'
+                        : 'bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed'
+                      } disabled:opacity-60`}
                   >
-                    {saving ? 'Saving...' : 'Save Scores'}
+                    {saveState === 'saving' ? 'Saving…' : 'Save Scores'}
                   </button>
                 </div>
-
-                {!allScoresEntered && (
-                  <div className="mt-4 text-sm text-amber-600">
-                    Please enter scores for all categories before saving.
-                  </div>
-                )}
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
       </main>

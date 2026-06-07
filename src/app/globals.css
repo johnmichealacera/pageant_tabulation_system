@@ -2,38 +2,151 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design Tokens ───────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --bg-base:    #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --bg-muted:   #F1F5F9;
+
+  /* Borders */
+  --border:     #E2E8F0;
+  --border-subtle: #F1F5F9;
+
+  /* Text */
+  --text-primary:   #0F172A;
+  --text-secondary: #475569;
+  --text-muted:     #94A3B8;
+
+  /* Brand */
+  --gold:       #F59E0B;
+  --gold-light: #FEF3C7;
+  --violet:     #8B5CF6;
+  --rose:       #F43F5E;
+  --emerald:    #10B981;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --shadow-gold: 0 0 20px rgba(245,158,11,0.15);
+}
+
+.dark {
+  /* Surfaces */
+  --bg-base:    #0A0A0F;
+  --bg-surface: #111118;
+  --bg-muted:   #1A1A2E;
+
+  /* Borders */
+  --border:        #1E1E2E;
+  --border-subtle: #16213E;
+
+  /* Text */
+  --text-primary:   #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-muted:     #4B5563;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.5), 0 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.6), 0 4px 6px -2px rgba(0,0,0,0.4);
+  --shadow-gold: 0 0 30px rgba(245,158,11,0.25);
+}
+
+/* ─── Base ─────────────────────────────────────────────────────────────── */
 @layer base {
   html {
-    font-family: system-ui, sans-serif;
+    font-family: var(--font-inter, system-ui, sans-serif);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
+/* ─── Gradient animation (sign-in page) ─────────────────────────────── */
 @keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
+/* ─── Shimmer skeleton ──────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ─── Components ────────────────────────────────────────────────────── */
 @layer components {
+  /* Buttons */
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply bg-gold-500 hover:bg-gold-600 text-white font-semibold py-2 px-4 rounded-lg
+           transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;
   }
-  
+
   .btn-secondary {
-    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+    @apply font-medium py-2 px-4 rounded-lg transition-all duration-200 border
+           bg-[var(--bg-surface)] border-[var(--border)] text-[var(--text-primary)]
+           hover:bg-[var(--bg-muted)] active:scale-95;
   }
-  
+
+  /* Cards */
   .card {
-    @apply bg-white rounded-lg shadow-md p-6 border border-gray-200;
+    @apply rounded-xl p-6 border transition-all duration-200
+           bg-[var(--bg-surface)] border-[var(--border)]
+           shadow-[var(--shadow-md)];
   }
-  
+
+  .card-hover {
+    @apply card hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5;
+  }
+
+  /* Table headers */
   .table-header {
-    @apply bg-primary-50 text-primary-900 font-semibold text-sm uppercase tracking-wide;
+    @apply font-semibold text-xs uppercase tracking-wider
+           text-[var(--text-muted)] bg-[var(--bg-muted)];
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--bg-muted) 25%,
+      var(--border) 50%,
+      var(--bg-muted) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    @apply rounded-md;
+  }
+
+  /* Gold accent ring (winner/rank-1) */
+  .ring-gold {
+    @apply ring-2 ring-gold-400 ring-offset-2 ring-offset-[var(--bg-base)];
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-gold {
+    @apply badge bg-gold-100 text-gold-800 dark:bg-gold-900/30 dark:text-gold-300;
+  }
+
+  .badge-active {
+    @apply badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300;
+  }
+
+  /* Score number display */
+  .score-number {
+    font-family: var(--font-jetbrains, 'JetBrains Mono', monospace);
+    font-variant-numeric: tabular-nums;
+    @apply font-bold;
   }
 }
