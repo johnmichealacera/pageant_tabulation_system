@@ -172,6 +172,9 @@ export default function Home() {
 
   const handleEventChange = (eventId: string) => fetchEventById(eventId);
 
+  const [showQR, setShowQR] = useState(false);
+  const publicUrl = typeof window !== 'undefined' ? window.location.href : '';
+
   const tabs = [
     { id: 'contestants', label: 'Contestants', icon: '👑' },
     { id: 'scoring',     label: 'Scoring',     icon: '📊' },
@@ -298,6 +301,19 @@ export default function Home() {
                 <svg className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+
+              {/* QR Code */}
+              <button
+                onClick={() => setShowQR(true)}
+                className="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)]
+                  text-[var(--text-secondary)] hover:text-[var(--text-primary)]
+                  transition-all duration-200"
+                title="Show QR code for audience"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                 </svg>
               </button>
 
@@ -628,6 +644,46 @@ export default function Home() {
           )}
         </AnimatePresence>
       </main>
+
+      {/* QR Code modal */}
+      <AnimatePresence>
+        {showQR && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setShowQR(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              onClick={e => e.stopPropagation()}
+              className="bg-[var(--bg-surface)] rounded-2xl p-6 shadow-2xl border border-[var(--border)] w-full max-w-xs text-center"
+            >
+              <h3 className="font-display font-bold text-[var(--text-primary)] mb-1">Scan to Join</h3>
+              <p className="text-xs text-[var(--text-muted)] mb-4">Share this QR with your audience</p>
+              <div className="w-44 h-44 mx-auto rounded-xl overflow-hidden border border-[var(--border)] bg-white p-2">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(publicUrl)}&margin=0`}
+                  alt="QR Code"
+                  className="w-full h-full"
+                />
+              </div>
+              <p className="text-xs text-[var(--text-muted)] mt-3 break-all px-2">{publicUrl}</p>
+              <button
+                onClick={() => setShowQR(false)}
+                className="mt-4 btn-secondary py-2 px-5 text-sm"
+              >
+                Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile login button */}
       <div className="sm:hidden fixed bottom-4 right-4">
