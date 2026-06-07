@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SignIn() {
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [email, setEmail]               = useState('');
+  const [password, setPassword]         = useState('');
+  const [error, setError]               = useState('');
+  const [loading, setLoading]           = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
@@ -34,80 +34,101 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
+    <div
+      className="min-h-screen flex items-center justify-center relative overflow-hidden px-4"
       style={{
-        background: 'linear-gradient(135deg, #0A0A0F 0%, #1A0A2E 40%, #0F0A1E 70%, #0A0A0F 100%)',
+        background: 'linear-gradient(135deg, #FFFBF0 0%, #FEF3C7 30%, #FFF0F5 65%, #FFF8E7 100%)',
       }}
     >
-      {/* Animated gradient orbs */}
+      {/* Decorative orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, #F59E0B 0%, transparent 70%)', filter: 'blur(40px)' }} />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-15"
-          style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 70%)', filter: 'blur(40px)' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-5"
-          style={{ background: 'radial-gradient(circle, #F59E0B 0%, transparent 60%)', filter: 'blur(80px)' }} />
+        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)', filter: 'blur(48px)' }} />
+        <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(244,63,94,0.12) 0%, transparent 70%)', filter: 'blur(48px)' }} />
+        <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)', filter: 'blur(32px)' }} />
       </div>
 
-      {/* Crown pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+      {/* Crown tile pattern */}
+      <div className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 12L48 28L64 30L52 42L55 58L40 50L25 58L28 42L16 30L32 28Z' fill='%23F59E0B'/%3E%3C/svg%3E")`,
-          backgroundSize: '160px 160px',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 12L48 28L64 30L52 42L55 58L40 50L25 58L28 42L16 30L32 28Z' fill='%23F59E0B' fill-opacity='0.07'/%3E%3C/svg%3E")`,
+          backgroundSize: '120px 120px',
         }}
       />
 
-      {/* Pageant winner image */}
-      <div className="absolute right-0 top-0 bottom-0 w-2/5 pointer-events-none hidden lg:flex items-end justify-end overflow-hidden">
-        <img
-          src="/pageant-winner.png"
-          alt=""
-          className="h-full w-auto object-contain object-bottom opacity-20"
-          style={{ filter: 'drop-shadow(0 0 60px rgba(245,158,11,0.3)) sepia(20%) brightness(0.9)' }}
-          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-        />
-        {/* Sparkles */}
-        {[
-          { top: '20%', left: '30%', size: 'w-2 h-2', color: 'bg-gold-400', delay: '0s', duration: '2s' },
-          { top: '35%', right: '20%', size: 'w-1.5 h-1.5', color: 'bg-white', delay: '0.6s', duration: '2.5s' },
-          { bottom: '40%', left: '25%', size: 'w-2 h-2', color: 'bg-gold-300', delay: '1.2s', duration: '1.8s' },
-          { bottom: '30%', right: '30%', size: 'w-1 h-1', color: 'bg-white', delay: '0.3s', duration: '2.2s' },
-        ].map((s, i) => (
-          <div key={i} className={`absolute ${s.size} rounded-full ${s.color} opacity-70 animate-pulse`}
-            style={{ top: s.top, bottom: (s as any).bottom, left: (s as any).left, right: (s as any).right, animationDelay: s.delay, animationDuration: s.duration }} />
-        ))}
-      </div>
+      {/* Floating sparkles */}
+      {[
+        { top: '15%', left: '8%',  size: 10, delay: 0 },
+        { top: '72%', left: '5%',  size: 7,  delay: 0.8 },
+        { top: '25%', right: '7%', size: 8,  delay: 0.4 },
+        { top: '60%', right: '9%', size: 12, delay: 1.1 },
+        { top: '45%', left: '3%', size: 6,  delay: 0.2 },
+      ].map((s, i) => (
+        <motion.div
+          key={i}
+          className="absolute pointer-events-none"
+          style={{ top: s.top, left: (s as any).left, right: (s as any).right }}
+          animate={{ y: [-6, 6, -6], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 3 + i * 0.4, delay: s.delay, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="#F59E0B">
+            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
+          </svg>
+        </motion.div>
+      ))}
 
-      {/* Sign-in card */}
+      {/* Card */}
       <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        initial={{ opacity: 0, y: 28, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 w-full max-w-sm mx-4"
+        className="relative z-10 w-full max-w-md"
       >
-        {/* Logo + heading */}
-        <div className="text-center mb-8">
+        {/* Crown + title above card */}
+        <div className="text-center mb-6">
           <motion.div
-            initial={{ scale: 0, rotate: -15 }}
+            initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, type: 'spring', stiffness: 200 }}
-            className="text-6xl mb-4 inline-block"
+            transition={{ duration: 0.7, delay: 0.1, type: 'spring', stiffness: 180 }}
+            className="text-7xl mb-3 inline-block drop-shadow-md"
           >
             👑
           </motion.div>
-          <h1 className="font-display text-3xl font-bold text-white">Welcome back</h1>
-          <p className="text-sm text-white/50 mt-1">Sign in to your dashboard</p>
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="font-display text-3xl font-bold text-gray-900"
+          >
+            Welcome back
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.35 }}
+            className="text-sm text-gray-500 mt-1"
+          >
+            Sign in to your pageant dashboard
+          </motion.p>
         </div>
 
-        {/* Card */}
-        <div className="rounded-2xl border border-white/10 p-8 shadow-2xl"
-          style={{ background: 'rgba(17, 17, 24, 0.85)', backdropFilter: 'blur(24px)' }}
+        {/* White card */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+          className="bg-white rounded-3xl shadow-2xl shadow-amber-200/60 border border-amber-100 p-8"
         >
+          {/* Gold top accent line */}
+          <div className="h-1 w-16 rounded-full bg-gradient-to-r from-gold-400 to-amber-300 mx-auto mb-7" />
+
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <label className="block text-xs font-medium text-white/50 uppercase tracking-wider mb-1.5">
-                Email
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
+                Email address
               </label>
               <input
                 type="email"
@@ -116,16 +137,16 @@ export default function SignIn() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl text-sm
-                  bg-white/5 border border-white/10 text-white placeholder-white/25
-                  focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50
+                className="w-full px-4 py-3 rounded-xl text-sm bg-gray-50 border border-gray-200
+                  text-gray-900 placeholder-gray-400
+                  focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20
                   transition-all duration-200"
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-medium text-white/50 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
                 Password
               </label>
               <div className="relative">
@@ -136,15 +157,15 @@ export default function SignIn() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-11 rounded-xl text-sm
-                    bg-white/5 border border-white/10 text-white placeholder-white/25
-                    focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50
+                  className="w-full px-4 py-3 pr-11 rounded-xl text-sm bg-gray-50 border border-gray-200
+                    text-gray-900 placeholder-gray-400
+                    focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20
                     transition-all duration-200"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(s => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   {showPassword ? (
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -167,12 +188,12 @@ export default function SignIn() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/20"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200"
                 >
-                  <svg className="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
-                  <p className="text-xs text-rose-400">{error}</p>
+                  <p className="text-xs text-rose-600 font-medium">{error}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -181,13 +202,13 @@ export default function SignIn() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 rounded-xl font-semibold text-sm
-                bg-gradient-to-r from-gold-500 to-gold-600
-                hover:from-gold-400 hover:to-gold-500
-                text-white shadow-lg shadow-gold-500/20
+              className="w-full py-3.5 px-4 rounded-xl font-bold text-sm
+                bg-gradient-to-r from-amber-400 to-gold-500
+                hover:from-amber-300 hover:to-gold-400
+                text-white shadow-lg shadow-amber-400/30
                 transition-all duration-200 active:scale-[0.98]
                 disabled:opacity-50 disabled:cursor-not-allowed
-                flex items-center justify-center gap-2"
+                flex items-center justify-center gap-2 tracking-wide"
             >
               {loading ? (
                 <>
@@ -197,24 +218,27 @@ export default function SignIn() {
                   </svg>
                   Signing in…
                 </>
-              ) : 'Sign in'}
+              ) : 'Sign In'}
             </button>
           </form>
 
           {/* Footer */}
-          <div className="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
+          <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-between">
             <button
               onClick={() => router.push('/')}
-              className="text-xs text-white/40 hover:text-white/70 transition-colors"
+              className="text-xs text-gray-400 hover:text-amber-600 transition-colors font-medium flex items-center gap-1"
             >
-              ← Public View
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              Public View
             </button>
             <div className="text-right">
-              <p className="text-xs text-white/30">Demo · admin@pageant.com</p>
-              <p className="text-xs text-white/30">Password: admin123</p>
+              <p className="text-xs text-gray-400">admin@pageant.com</p>
+              <p className="text-xs text-gray-400">admin123</p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );
