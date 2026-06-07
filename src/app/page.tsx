@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import ContestantCard from '@/components/ContestantCard';
 import RankingTable from '@/components/RankingTable';
 import CategoryBreakdown from '@/components/CategoryBreakdown';
 import ThemeToggle from '@/components/ThemeToggle';
+import IntroScreen from '@/components/IntroScreen';
 
 interface EventData {
   event: {
@@ -63,6 +64,14 @@ const POLL_INTERVAL = 5000;
 
 export default function Home() {
   const router = useRouter();
+
+  // Intro screen state
+  const [showIntro, setShowIntro] = useState(true);
+  const [expandFromButton, setExpandFromButton] = useState(false);
+  const [introOrigin, setIntroOrigin] = useState({ x: 0, y: 0 });
+  const introButtonRef = useRef<HTMLButtonElement>(null);
+  const buttonControls = useAnimation();
+
   const [activeTab, setActiveTab] = useState<'contestants' | 'scoring' | 'rankings' | 'breakdown'>('contestants');
   const [eventData, setEventData] = useState<EventData | null>(null);
   const [allEvents, setAllEvents] = useState<EventOption[]>([]);
@@ -83,6 +92,36 @@ export default function Home() {
   useEffect(() => {
     eventIdRef.current = eventData?.event?.id ?? null;
   }, [eventData?.event?.id]);
+
+  // After loading, measure button position for the suck-out exit animation
+  useEffect(() => {
+    if (!loading && introButtonRef.current) {
+      const r = introButtonRef.current.getBoundingClientRect();
+      setIntroOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    }
+  }, [loading]);
+
+  const getButtonCenter = () => {
+    if (introButtonRef.current) {
+      const r = introButtonRef.current.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }
+    return introOrigin;
+  };
+
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    setTimeout(() => {
+      buttonControls.start({ scale: [1, 1.5, 1.1, 1], transition: { duration: 0.5, ease: 'easeOut' } });
+    }, 60);
+  };
+
+  const openIntroFromButton = () => {
+    const origin = getButtonCenter();
+    setIntroOrigin(origin);
+    setExpandFromButton(true);
+    setShowIntro(true);
+  };
 
   // Auto-poll every 5 seconds
   useEffect(() => {
@@ -226,6 +265,18 @@ export default function Home() {
   }
 
   return (
+    <>
+    <AnimatePresence>
+      {showIntro && (
+        <IntroScreen
+          key="intro"
+          onComplete={handleIntroComplete}
+          originX={introOrigin.x}
+          originY={introOrigin.y}
+          expandFromOrigin={expandFromButton}
+        />
+      )}
+    </AnimatePresence>
     <div className="min-h-screen bg-[var(--bg-base)]">
 
       {/* Event selector bar */}
@@ -316,6 +367,26 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                 </svg>
               </button>
+
+              {/* Intro replay */}
+              <motion.button
+                ref={introButtonRef}
+                animate={buttonControls}
+                onClick={openIntroFromButton}
+                className={`p-2 rounded-lg border transition-all duration-300 ${
+                  showIntro
+                    ? 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-muted)]'
+                    : 'border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40'
+                }`}
+                style={{ opacity: showIntro ? 0.4 : 1, pointerEvents: showIntro ? 'none' : 'auto' }}
+                title="Watch intro presentation"
+              >
+                {/* Play-circle icon */}
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none" />
+                </svg>
+              </motion.button>
 
               {/* Stage View */}
               <button
@@ -712,5 +783,6 @@ export default function Home() {
         </button>
       </div>
     </div>
+    </>
   );
 }
