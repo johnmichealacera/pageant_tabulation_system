@@ -149,6 +149,14 @@ export default function EventManagement({ params }: { params: { id: string } }) 
             {event._count.scores > 0 && (
               <div className="flex gap-2 shrink-0">
                 <button
+                  onClick={() => router.push(`/admin/events/${event.id}/analytics`)}
+                  className="py-2 px-3 text-sm rounded-lg font-medium border transition-all duration-200
+                    bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400
+                    border-violet-200 dark:border-violet-800 hover:bg-violet-100"
+                >
+                  Analytics
+                </button>
+                <button
                   onClick={() => router.push(`/admin/events/${event.id}/results`)}
                   className="py-2 px-3 text-sm rounded-lg font-medium border transition-all duration-200
                     bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400
@@ -160,7 +168,7 @@ export default function EventManagement({ params }: { params: { id: string } }) 
                   onClick={() => router.push(`/admin/events/${event.id}/report`)}
                   className="btn-primary py-2 px-3 text-sm"
                 >
-                  Full Report
+                  Report
                 </button>
               </div>
             )}
