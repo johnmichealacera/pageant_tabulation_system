@@ -222,7 +222,7 @@ export default function TemplatesPage() {
       <AnimatePresence>
         {modal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 overflow-y-auto"
+            className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-4 pt-8 sm:pt-16 overflow-y-auto"
             style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
             onClick={closeModal}>
             <motion.div initial={{ opacity: 0, scale: 0.95, y: -12 }} animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -270,17 +270,17 @@ export default function TemplatesPage() {
 
                   <div className="space-y-2">
                     {tplCats.map((cat, i) => (
-                      <div key={i} className="flex gap-2 items-center">
+                      <div key={i} className="flex gap-1.5 sm:gap-2 items-center">
                         <input value={cat.name} onChange={e => updateCat(i, 'name', e.target.value)}
-                          placeholder="Category name" className="form-input flex-1 min-w-0" />
+                          placeholder="Category name" className="form-input flex-1 min-w-0 text-sm" />
                         <input type="number" value={cat.maxScore} min={1}
                           onChange={e => updateCat(i, 'maxScore', parseInt(e.target.value) || 1)}
-                          className="form-input w-20 text-center" title="Max score" />
-                        <div className="relative w-20">
+                          className="form-input w-14 sm:w-20 text-center text-sm" title="Max score" />
+                        <div className="relative w-14 sm:w-20">
                           <input type="number" value={(cat.weight * 100).toFixed(0)} min={1} max={100}
                             onChange={e => updateCat(i, 'weight', (parseInt(e.target.value) || 0) / 100)}
-                            className="form-input w-full text-center pr-5" title="Weight %" />
-                          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)]">%</span>
+                            className="form-input w-full text-center pr-4 sm:pr-5 text-sm" title="Weight %" />
+                          <span className="absolute right-1.5 sm:right-2.5 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)]">%</span>
                         </div>
                         {tplCats.length > 1 && (
                           <button onClick={() => removeCat(i)}

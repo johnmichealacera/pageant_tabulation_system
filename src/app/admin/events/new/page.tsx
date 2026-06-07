@@ -71,7 +71,7 @@ export default function NewEvent() {
             </svg>
             Dashboard
           </button>
-          <h1 className="font-display text-3xl font-bold text-[var(--text-primary)]">Create Event</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">Create Event</h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">Set up a new pageant scoring event</p>
         </div>
 

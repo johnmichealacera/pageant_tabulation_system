@@ -369,7 +369,7 @@ export default function IntroScreen({ onComplete, originX, originY, expandFromOr
                 initial={{ opacity: 0, y: 32 }}
                 animate={phase >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
                 transition={{ delay: i * 0.038, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="font-display text-4xl sm:text-5xl xl:text-6xl font-bold tracking-[0.15em] text-white"
+                className="font-display text-3xl sm:text-5xl xl:text-6xl font-bold tracking-[0.1em] sm:tracking-[0.15em] text-white"
               >
                 {char === ' ' ? ' ' : char}
               </motion.span>
@@ -385,7 +385,7 @@ export default function IntroScreen({ onComplete, originX, originY, expandFromOr
               initial={{ opacity: 0, y: 24 }}
               animate={phase >= 2 ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.75 + i * 0.05, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display text-3xl sm:text-4xl xl:text-5xl font-bold tracking-[0.25em] inline-block"
+              className="font-display text-2xl sm:text-4xl xl:text-5xl font-bold tracking-[0.2em] sm:tracking-[0.25em] inline-block"
               style={{ color: '#F59E0B' }}
             >
               {char}
@@ -404,7 +404,7 @@ export default function IntroScreen({ onComplete, originX, originY, expandFromOr
 
         {/* Capability cards */}
         {phase >= 3 && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 w-full mb-6 sm:mb-8">
             {CAPABILITIES.map((cap, i) => (
               <motion.div
                 key={cap.title}
@@ -444,7 +444,7 @@ export default function IntroScreen({ onComplete, originX, originY, expandFromOr
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.1, type: 'spring', stiffness: 200, damping: 18 }}
               onClick={complete}
-              className="relative px-10 py-3.5 rounded-full font-bold text-sm tracking-wider text-white overflow-hidden group"
+              className="relative px-8 sm:px-10 py-3 sm:py-3.5 rounded-full font-bold text-sm tracking-wider text-white overflow-hidden group w-full max-w-xs sm:w-auto"
               style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
             >
               {/* Shimmer */}

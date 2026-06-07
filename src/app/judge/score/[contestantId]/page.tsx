@@ -328,18 +328,19 @@ export default function ScoreContestant({ params }: { params: { contestantId: st
 
           {/* Contestant sidebar */}
           <div className="lg:col-span-1">
-            <div className="card sticky top-6">
-              <div className="flex flex-col items-center text-center">
-                <div className="relative mb-4">
+            <div className="card lg:sticky lg:top-6">
+              {/* Mobile: horizontal layout — Desktop: centered column */}
+              <div className="flex items-center gap-4 lg:flex-col lg:items-center lg:text-center">
+                <div className="relative shrink-0">
                   {contestant.photo ? (
                     <img
                       src={contestant.photo}
                       alt={contestant.name}
-                      className="w-28 h-36 rounded-xl object-cover ring-2 ring-violet-400"
+                      className="w-20 h-28 lg:w-28 lg:h-36 rounded-xl object-cover ring-2 ring-violet-400"
                     />
                   ) : (
-                    <div className="w-28 h-36 rounded-xl bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/20 dark:to-violet-800/20 flex items-center justify-center ring-2 ring-violet-400">
-                      <span className="text-5xl">👸</span>
+                    <div className="w-20 h-28 lg:w-28 lg:h-36 rounded-xl bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/20 dark:to-violet-800/20 flex items-center justify-center ring-2 ring-violet-400">
+                      <span className="text-4xl lg:text-5xl">👸</span>
                     </div>
                   )}
                   {allScoresEntered && (
@@ -354,31 +355,47 @@ export default function ScoreContestant({ params }: { params: { contestantId: st
                     </motion.div>
                   )}
                 </div>
-                <h2 className="font-display text-xl font-bold text-[var(--text-primary)]">{contestant.name}</h2>
-                <p className="text-sm text-[var(--text-secondary)] mt-0.5">{contestant.course}</p>
-                <p className="text-xs text-[var(--text-muted)]">{contestant.year} · Age {contestant.age}</p>
+                <div className="flex-1 min-w-0 lg:mt-2">
+                  <h2 className="font-display text-lg lg:text-xl font-bold text-[var(--text-primary)] truncate lg:text-center">{contestant.name}</h2>
+                  <p className="text-sm text-[var(--text-secondary)] mt-0.5 truncate lg:text-center">{contestant.course}</p>
+                  <p className="text-xs text-[var(--text-muted)] lg:text-center">{contestant.year} · Age {contestant.age}</p>
+                  {/* Mobile progress mini-bar */}
+                  <div className="mt-2 lg:hidden">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1.5 bg-[var(--bg-muted)] rounded-full overflow-hidden">
+                        <div className="h-full bg-violet-500 rounded-full transition-all"
+                          style={{ width: `${categories.length > 0 ? (categories.filter(c => (scores[c.id] ?? 0) > 0).length / categories.length) * 100 : 0}%` }} />
+                      </div>
+                      <span className="text-xs text-[var(--text-muted)] shrink-0">
+                        {categories.filter(c => (scores[c.id] ?? 0) > 0).length}/{categories.length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                {/* Category quick-nav */}
-                <div className="w-full mt-4 space-y-1">
+              {/* Category quick-nav — horizontal scroll on mobile, vertical list on desktop */}
+              <div className="mt-4">
+                <div className="flex lg:flex-col overflow-x-auto gap-1 pb-1 lg:pb-0 lg:space-y-1 -mx-1 px-1 scrollbar-hide">
                   {categories.map((cat, i) => {
                     const scored = (scores[cat.id] ?? 0) > 0;
                     return (
                       <button
                         key={cat.id}
                         onClick={() => setFocusedIndex(i)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-all duration-150 ${
+                        className={`shrink-0 lg:shrink lg:w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-all duration-150 whitespace-nowrap lg:whitespace-normal ${
                           focusedIndex === i
                             ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 font-semibold'
                             : 'text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]'
                         }`}
                       >
-                        <span className="truncate">{cat.name}</span>
+                        <span className="truncate max-w-[120px] lg:max-w-none">{cat.name}</span>
                         {scored ? (
                           <span className="score-number text-xs font-bold text-emerald-600 dark:text-emerald-400 ml-2 shrink-0">
                             {scores[cat.id]}
                           </span>
                         ) : (
-                          <span className="w-2 h-2 rounded-full bg-[var(--border)] shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-[var(--border)] shrink-0 ml-2" />
                         )}
                       </button>
                     );
@@ -484,25 +501,24 @@ export default function ScoreContestant({ params }: { params: { contestantId: st
               </div>
 
               {/* Submit */}
-              <div className="mt-6 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => router.push('/judge')}
-                  className="btn-secondary py-2.5 px-5"
-                >
-                  Cancel
-                </button>
-
-                <div className="flex items-center gap-3">
-                  {!allScoresEntered && (
-                    <p className="text-xs text-amber-600 dark:text-amber-400 hidden sm:block">
-                      Score all {categories.length} categories to submit
-                    </p>
-                  )}
+              <div className="mt-6 space-y-3">
+                {!allScoresEntered && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 text-center">
+                    Score all {categories.length} categories to submit
+                  </p>
+                )}
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => router.push('/judge')}
+                    className="btn-secondary py-3 px-5 flex-1 sm:flex-none"
+                  >
+                    Cancel
+                  </button>
                   <button
                     type="submit"
                     disabled={saveState === 'saving' || !allScoresEntered}
-                    className={`py-2.5 px-6 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm
+                    className={`flex-1 py-3 px-6 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm
                       ${allScoresEntered
                         ? 'bg-violet-600 hover:bg-violet-700 text-white active:scale-95'
                         : 'bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed'

@@ -277,7 +277,7 @@ export default function Home() {
         />
       )}
     </AnimatePresence>
-    <div className="min-h-screen bg-[var(--bg-base)]">
+    <div className="min-h-screen bg-[var(--bg-base)] pb-16 sm:pb-0">
 
       {/* Event selector bar */}
       {allEvents.length > 1 && (
@@ -322,7 +322,7 @@ export default function Home() {
                 {eventData.event.description} · {new Date(eventData.event.eventDate).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
               {/* Live indicator */}
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
                 <span className="relative flex h-2 w-2">
@@ -358,9 +358,9 @@ export default function Home() {
               {/* QR Code */}
               <button
                 onClick={() => setShowQR(true)}
-                className="p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)]
+                className="hidden sm:flex p-2 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)]
                   text-[var(--text-secondary)] hover:text-[var(--text-primary)]
-                  transition-all duration-200"
+                  transition-all duration-200 items-center"
                 title="Show QR code for audience"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -368,12 +368,12 @@ export default function Home() {
                 </svg>
               </button>
 
-              {/* Intro replay */}
+              {/* Intro replay — desktop only; mobile uses the bottom bar */}
               <motion.button
                 ref={introButtonRef}
                 animate={buttonControls}
                 onClick={openIntroFromButton}
-                className={`p-2 rounded-lg border transition-all duration-300 ${
+                className={`hidden sm:flex p-2 rounded-lg border transition-all duration-300 items-center ${
                   showIntro
                     ? 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-muted)]'
                     : 'border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40'
@@ -773,15 +773,53 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Mobile login button */}
-      <div className="sm:hidden fixed bottom-4 right-4">
-        <button
-          onClick={() => router.push('/auth/signin')}
-          className="btn-primary py-2 px-4 text-sm shadow-lg rounded-full"
-        >
-          Login
-        </button>
-      </div>
+      {/* Mobile bottom navigation — sm:hidden */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-surface)] border-t border-[var(--border)] shadow-lg">
+        <div className="flex items-center justify-around py-1">
+          {/* Login */}
+          <button
+            onClick={() => router.push('/auth/signin')}
+            className="flex flex-col items-center gap-0.5 py-2 px-3 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors min-w-0"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span className="text-[10px] font-medium">Login</span>
+          </button>
+          {/* Stage View */}
+          <button
+            onClick={() => window.open(`/live?eventId=${eventData.event.id}`, '_blank')}
+            className="flex flex-col items-center gap-0.5 py-2 px-3 rounded-lg text-amber-600 dark:text-amber-400 hover:text-amber-500 transition-colors min-w-0"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span className="text-[10px] font-medium">Stage</span>
+          </button>
+          {/* Intro */}
+          <button
+            onClick={openIntroFromButton}
+            style={{ opacity: showIntro ? 0.4 : 1, pointerEvents: showIntro ? 'none' : 'auto' }}
+            className="flex flex-col items-center gap-0.5 py-2 px-3 rounded-lg text-[var(--text-muted)] hover:text-amber-600 dark:hover:text-amber-400 transition-colors min-w-0"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <circle cx="12" cy="12" r="10" />
+              <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none" />
+            </svg>
+            <span className="text-[10px] font-medium">Intro</span>
+          </button>
+          {/* QR Code */}
+          <button
+            onClick={() => setShowQR(true)}
+            className="flex flex-col items-center gap-0.5 py-2 px-3 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors min-w-0"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+            <span className="text-[10px] font-medium">QR Code</span>
+          </button>
+        </div>
+      </nav>
     </div>
     </>
   );

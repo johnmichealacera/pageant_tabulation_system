@@ -116,33 +116,33 @@ function LiveStageContent() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 flex items-start justify-between px-12 pt-10 pb-6">
-        <div>
+      <header className="relative z-10 flex items-start justify-between gap-3 px-4 sm:px-8 lg:px-12 pt-5 sm:pt-10 pb-3 sm:pb-6">
+        <div className="min-w-0 flex-1">
           <motion.h1
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl xl:text-5xl font-bold tracking-tight leading-tight"
+            className="text-xl sm:text-4xl xl:text-5xl font-bold tracking-tight leading-tight truncate"
             style={{ fontFamily: 'var(--font-playfair, "Playfair Display", serif)' }}
           >
             {data.event.name}
           </motion.h1>
           {data.event.description && (
-            <p className="text-white/60 text-sm mt-1 tracking-wider uppercase">{data.event.description}</p>
+            <p className="text-white/60 text-xs sm:text-sm mt-0.5 sm:mt-1 tracking-wider uppercase truncate">{data.event.description}</p>
           )}
         </div>
 
         {/* Live indicator */}
-        <div className="flex flex-col items-end gap-2 shrink-0">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10">
+        <div className="flex flex-col items-end gap-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10">
             <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-            <span className="text-emerald-400 text-sm font-semibold tracking-widest uppercase">Live</span>
+            <span className="text-emerald-400 text-xs sm:text-sm font-semibold tracking-widest uppercase">Live</span>
           </div>
           <p className="text-white/45 text-xs tabular-nums">{lastUpdated}</p>
         </div>
       </header>
 
       {/* Main leaderboard */}
-      <main className="relative z-10 flex-1 px-12 pb-10 flex flex-col justify-center">
+      <main className="relative z-10 flex-1 px-4 sm:px-8 lg:px-12 pb-6 sm:pb-10 flex flex-col justify-center">
 
         <AnimatePresence mode="wait">
           {reveal ? (
@@ -153,13 +153,13 @@ function LiveStageContent() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-              className="flex flex-col items-center justify-center flex-1 text-center py-12"
+              className="flex flex-col items-center justify-center flex-1 text-center py-6 sm:py-12"
             >
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="text-8xl mb-8"
+                className="text-5xl sm:text-8xl mb-4 sm:mb-8"
               >
                 👑
               </motion.div>
@@ -171,7 +171,7 @@ function LiveStageContent() {
                   transition={{ delay: 0.3, type: 'spring' }}
                   src={rankings[0].contestant.photo}
                   alt={rankings[0].contestant.name}
-                  className="w-48 h-64 object-cover rounded-3xl border-4 border-gold-400 shadow-2xl shadow-gold-500/30 mb-8"
+                  className="w-32 h-44 sm:w-48 sm:h-64 object-cover rounded-2xl sm:rounded-3xl border-4 border-gold-400 shadow-2xl shadow-gold-500/30 mb-5 sm:mb-8"
                 />
               )}
 
@@ -179,7 +179,7 @@ function LiveStageContent() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-gold-400 text-lg font-bold tracking-[0.3em] uppercase mb-3"
+                className="text-gold-400 text-sm sm:text-lg font-bold tracking-[0.3em] uppercase mb-2 sm:mb-3"
               >
                 Winner
               </motion.p>
@@ -188,7 +188,7 @@ function LiveStageContent() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, type: 'spring' }}
-                className="text-6xl xl:text-8xl font-bold leading-tight"
+                className="text-3xl sm:text-6xl xl:text-8xl font-bold leading-tight px-2"
                 style={{ fontFamily: 'var(--font-playfair, "Playfair Display", serif)' }}
               >
                 {rankings[0]?.contestant.name}
@@ -198,7 +198,7 @@ function LiveStageContent() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.7 }}
-                className="text-white/40 text-xl mt-3"
+                className="text-white/40 text-base sm:text-xl mt-2 sm:mt-3"
               >
                 {rankings[0]?.contestant.course}
               </motion.p>
@@ -207,15 +207,15 @@ function LiveStageContent() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.9 }}
-                className="mt-8 px-8 py-4 rounded-2xl border border-gold-400/40 bg-gold-500/10"
+                className="mt-5 sm:mt-8 px-5 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl border border-gold-400/40 bg-gold-500/10"
               >
                 <span
-                  className="text-5xl font-bold text-gold-400"
+                  className="text-3xl sm:text-5xl font-bold text-gold-400"
                   style={{ fontFamily: 'var(--font-jetbrains, "JetBrains Mono", monospace)' }}
                 >
                   {rankings[0]?.score}
                 </span>
-                <span className="text-white/40 text-xl ml-2">pts</span>
+                <span className="text-white/40 text-base sm:text-xl ml-1.5 sm:ml-2">pts</span>
               </motion.div>
             </motion.div>
 
@@ -235,42 +235,42 @@ function LiveStageContent() {
                         initial={{ opacity: 0, x: -30 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 30 }}
-                        className={`flex items-center gap-5 px-6 py-4 rounded-2xl border transition-colors ${
+                        className={`flex items-center gap-2 sm:gap-5 px-3 sm:px-6 py-2.5 sm:py-4 rounded-xl sm:rounded-2xl border transition-colors ${
                           isTop3
                             ? 'bg-white/10 border-white/20'
                             : 'bg-white/[0.05] border-white/10'
                         }`}
                       >
                         {/* Rank */}
-                        <div className="w-12 text-center shrink-0">
+                        <div className="w-8 sm:w-12 text-center shrink-0">
                           {isTop3 ? (
-                            <span className="text-3xl">{MEDAL[r.rank - 1]}</span>
+                            <span className="text-xl sm:text-3xl">{MEDAL[r.rank - 1]}</span>
                           ) : (
-                            <span className="text-xl font-bold text-white/50">{r.rank}</span>
+                            <span className="text-sm sm:text-xl font-bold text-white/50">{r.rank}</span>
                           )}
                         </div>
 
                         {/* Photo */}
-                        <div className="shrink-0">
+                        <div className="shrink-0 hidden xs:block">
                           {r.contestant.photo ? (
                             <img src={r.contestant.photo} alt={r.contestant.name}
-                              className={`object-cover rounded-xl border ${
-                                isTop3 ? 'w-14 h-18 border-white/20' : 'w-12 h-16 border-white/10'
+                              className={`object-cover rounded-lg sm:rounded-xl border ${
+                                isTop3 ? 'border-white/20' : 'border-white/10'
                               }`}
-                              style={{ height: isTop3 ? '4.5rem' : '4rem' }}
+                              style={{ width: isTop3 ? '3rem' : '2.5rem', height: isTop3 ? '4rem' : '3.5rem' }}
                             />
                           ) : (
-                            <div className={`rounded-xl bg-white/10 flex items-center justify-center border border-white/15 ${isTop3 ? 'w-14' : 'w-12'}`}
-                              style={{ height: isTop3 ? '4.5rem' : '4rem' }}>
-                              <span className="text-2xl">👸</span>
+                            <div className="rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center border border-white/15"
+                              style={{ width: isTop3 ? '3rem' : '2.5rem', height: isTop3 ? '4rem' : '3.5rem' }}>
+                              <span className="text-lg sm:text-2xl">👸</span>
                             </div>
                           )}
                         </div>
 
                         {/* Name + bar */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-baseline gap-3 mb-2">
-                            <span className={`font-bold truncate ${isTop3 ? 'text-xl xl:text-2xl text-white' : 'text-lg text-white/90'}`}
+                          <div className="flex items-baseline gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+                            <span className={`font-bold truncate ${isTop3 ? 'text-sm sm:text-xl xl:text-2xl text-white' : 'text-xs sm:text-lg text-white/90'}`}
                               style={isTop3 ? { fontFamily: 'var(--font-playfair, "Playfair Display", serif)' } : {}}>
                               {r.contestant.name}
                             </span>
@@ -284,7 +284,7 @@ function LiveStageContent() {
                         {/* Score */}
                         <div className="text-right shrink-0">
                           <span
-                            className={`font-bold tabular-nums ${isTop3 ? 'text-3xl xl:text-4xl' : 'text-2xl'} ${RANK_COLOR[r.rank - 1] ?? 'text-white/75'}`}
+                            className={`font-bold tabular-nums ${isTop3 ? 'text-lg sm:text-3xl xl:text-4xl' : 'text-base sm:text-2xl'} ${RANK_COLOR[r.rank - 1] ?? 'text-white/75'}`}
                             style={{ fontFamily: 'var(--font-jetbrains, "JetBrains Mono", monospace)' }}
                           >
                             {r.score}
@@ -298,8 +298,8 @@ function LiveStageContent() {
               </LayoutGroup>
 
               {rankings.length === 0 && (
-                <div className="text-center py-24 text-white/20">
-                  <p className="text-2xl font-light">Scoring in progress…</p>
+                <div className="text-center py-12 sm:py-24 text-white/20">
+                  <p className="text-lg sm:text-2xl font-light">Scoring in progress…</p>
                   <p className="text-sm mt-2">Rankings will appear as judges submit scores</p>
                 </div>
               )}
@@ -309,7 +309,7 @@ function LiveStageContent() {
       </main>
 
       {/* Footer ticker */}
-      <div className="relative z-10 border-t border-white/10 px-12 py-3 flex items-center justify-between">
+      <div className="relative z-10 border-t border-white/10 px-4 sm:px-8 lg:px-12 py-2 sm:py-3 flex items-center justify-between">
         <div className="flex items-center gap-3 text-white/40 text-xs">
           <span className="tracking-widest uppercase">Live Tabulation</span>
           <span>·</span>
@@ -327,10 +327,10 @@ function LiveStageContent() {
             exit={{ opacity: 0, y: 8 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 z-50"
           >
-            <div className="flex items-center gap-2 bg-black/80 backdrop-blur-md border border-white/10 rounded-2xl px-4 py-2.5">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-black/80 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl px-2.5 sm:px-4 py-2 sm:py-2.5">
               <button
                 onClick={() => setReveal(false)}
-                className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                className={`px-3 sm:px-4 py-2 sm:py-1.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
                   !reveal ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'
                 }`}
               >
@@ -338,16 +338,16 @@ function LiveStageContent() {
               </button>
               <button
                 onClick={() => setReveal(true)}
-                className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-3 sm:px-4 py-2 sm:py-1.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 sm:gap-2 ${
                   reveal ? 'bg-gold-500/20 text-gold-400' : 'text-white/40 hover:text-gold-400'
                 }`}
               >
-                <span>👑</span> Reveal Winner
+                <span>👑</span><span className="hidden xs:inline">Reveal</span> Winner
               </button>
               <div className="w-px h-4 bg-white/10" />
               <button
                 onClick={() => { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }}
-                className="text-white/40 hover:text-white transition-colors px-2"
+                className="text-white/40 hover:text-white transition-colors p-1.5 sm:px-2"
                 title="Toggle fullscreen"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

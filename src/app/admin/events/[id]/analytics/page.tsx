@@ -150,7 +150,7 @@ export default function AnalyticsDashboard({ params }: { params: { id: string } 
                 <h2 className="font-semibold text-[var(--text-primary)]">Score Heatmap</h2>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">Average score per contestant per category</p>
               </div>
-              <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--text-muted)]">
                 <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-200 dark:bg-emerald-800" />≥85%</span>
                 <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-gold-200 dark:bg-gold-800" />70–84%</span>
                 <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-200 dark:bg-amber-800" />55–69%</span>
@@ -221,7 +221,7 @@ export default function AnalyticsDashboard({ params }: { params: { id: string } 
                   <motion.div initial={{ width: 0 }} animate={{ width: `${cat.avgPct}%` }} transition={{ duration: 0.7, ease: 'easeOut', delay: i * 0.06 }}
                     className={`h-2 rounded-full ${cat.avgPct >= 80 ? 'bg-emerald-500' : cat.avgPct >= 65 ? 'bg-gold-500' : 'bg-rose-500'}`} />
                 </div>
-                <div className="grid grid-cols-4 gap-3 text-center text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-center text-xs">
                   {[
                     { label: 'Avg Score',  value: cat.avgScore.toFixed(1), color: 'text-[var(--text-primary)]' },
                     { label: 'Highest',    value: cat.highestScore,         color: 'text-emerald-500' },

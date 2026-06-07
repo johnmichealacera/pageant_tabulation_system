@@ -174,16 +174,16 @@ export default function JudgeDashboard() {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
           {[
             { label: 'Contestants', value: event.contestants.length, color: 'text-[var(--text-primary)]' },
             { label: 'Categories',  value: event.categories.length,  color: 'text-gold-500' },
             { label: 'Scores Done', value: totalScored,              color: 'text-violet-500' },
           ].map((s, i) => (
             <motion.div key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-              className="card text-center py-4">
-              <div className={`score-number text-2xl font-bold ${s.color}`}>{s.value}</div>
-              <div className="text-xs text-[var(--text-muted)] mt-0.5">{s.label}</div>
+              className="card text-center py-3 sm:py-4 px-2 sm:px-4">
+              <div className={`score-number text-xl sm:text-2xl font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-[10px] sm:text-xs text-[var(--text-muted)] mt-0.5 leading-tight">{s.label}</div>
             </motion.div>
           ))}
         </div>

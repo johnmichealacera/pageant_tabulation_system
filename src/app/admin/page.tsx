@@ -78,7 +78,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div>
-              <h1 className="font-display text-2xl font-bold text-[var(--text-primary)]">Admin Dashboard</h1>
+              <h1 className="font-display text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Admin Dashboard</h1>
               <p className="text-xs text-[var(--text-muted)] mt-0.5">
                 {session?.user?.name} · Pageant Management
               </p>
@@ -143,12 +143,22 @@ export default function AdminDashboard() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-[var(--text-primary)]">Pageant Events</h2>
-            <button
-              onClick={() => router.push('/admin/events/new')}
-              className="btn-primary py-1.5 px-3 text-sm sm:hidden"
-            >
-              + New
-            </button>
+            <div className="flex items-center gap-2 sm:hidden">
+              <button
+                onClick={() => router.push('/admin/templates')}
+                className="py-1.5 px-3 text-sm rounded-lg font-medium border
+                  bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400
+                  border-violet-200 dark:border-violet-800"
+              >
+                Templates
+              </button>
+              <button
+                onClick={() => router.push('/admin/events/new')}
+                className="btn-primary py-1.5 px-3 text-sm"
+              >
+                + New
+              </button>
+            </div>
           </div>
 
           {events.length === 0 ? (

@@ -140,7 +140,7 @@ export default function RankingTable({ rankings }: RankingTableProps) {
       <div className="card overflow-hidden">
         <h3 className="font-semibold text-[var(--text-primary)] mb-4 text-sm">Complete Rankings</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" style={{ minWidth: '520px' }}>
             <thead>
               <tr className="table-header">
                 <th className="px-4 py-3 text-left">Rank</th>

@@ -92,7 +92,7 @@ export default function SignIn() {
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ duration: 0.7, delay: 0.1, type: 'spring', stiffness: 180 }}
-            className="text-7xl mb-3 inline-block drop-shadow-md"
+            className="text-5xl sm:text-7xl mb-3 inline-block drop-shadow-md"
           >
             👑
           </motion.div>
@@ -100,7 +100,7 @@ export default function SignIn() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="font-display text-3xl font-bold text-gray-900"
+            className="font-display text-2xl sm:text-3xl font-bold text-gray-900"
           >
             Welcome back
           </motion.h1>
@@ -119,7 +119,7 @@ export default function SignIn() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
-          className="bg-white rounded-3xl shadow-2xl shadow-amber-200/60 border border-amber-100 p-8"
+          className="bg-white rounded-3xl shadow-2xl shadow-amber-200/60 border border-amber-100 p-5 sm:p-8"
         >
           {/* Gold top accent line */}
           <div className="h-1 w-16 rounded-full bg-gradient-to-r from-gold-400 to-amber-300 mx-auto mb-7" />
