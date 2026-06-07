@@ -149,4 +149,10 @@
     font-variant-numeric: tabular-nums;
     @apply font-bold;
   }
+
+  .form-input {
+    @apply w-full px-3 py-2.5 text-sm rounded-xl border border-[var(--border)] bg-[var(--bg-muted)];
+    @apply text-[var(--text-primary)] placeholder-[var(--text-muted)];
+    @apply focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all;
+  }
 }

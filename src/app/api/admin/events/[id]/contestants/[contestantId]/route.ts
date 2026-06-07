@@ -48,7 +48,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { name, age, course, year, photo } = body;
+    const { name, age, course, year, photo, bio, platform, hometown, achievements, socialLinks, gallery } = body;
 
     if (!name || !age || !course || !year) {
       return NextResponse.json({ error: 'Name, age, course, and year are required' }, { status: 400 });
@@ -76,6 +76,12 @@ export async function PUT(
         course,
         year,
         photo: photo || null,
+        bio: bio || null,
+        platform: platform || null,
+        hometown: hometown || null,
+        achievements: achievements ? JSON.stringify(achievements) : null,
+        socialLinks: socialLinks ? JSON.stringify(socialLinks) : null,
+        gallery: gallery ? JSON.stringify(gallery) : null,
       },
     });
 

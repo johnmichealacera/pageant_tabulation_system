@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx prisma/seed.ts",
+    "db:push": "prisma db push",
     "postinstall": "prisma generate",
     "electron:build": "node electron/build.js"
   },

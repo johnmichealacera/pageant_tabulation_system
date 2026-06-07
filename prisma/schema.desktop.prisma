@@ -90,6 +90,13 @@ model Contestant {
   year  String
   photo String?
 
+  bio          String?
+  platform     String?
+  hometown     String?
+  achievements String?
+  socialLinks  String?
+  gallery      String?
+
   pageantEventId String
   pageantEvent   PageantEvent @relation(fields: [pageantEventId], references: [id], onDelete: Cascade)
 
