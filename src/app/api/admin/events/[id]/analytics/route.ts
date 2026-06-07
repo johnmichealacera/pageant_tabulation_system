@@ -83,7 +83,7 @@ export async function GET(
     const sd  = stdDev(judgeScores);
     return {
       judgeId:    j.id,
-      name:       `Judge ${idx + 1}`,
+      name:       j.name,
       role:       j.role,
       avgScore:   Math.round(avg * 10) / 10,
       stdDev:     Math.round(sd * 100) / 100,
@@ -121,11 +121,11 @@ export async function GET(
     for (const score of catScores) {
       const z = (score.score - avg) / sd;
       if (Math.abs(z) >= 1.75) {
-        const judge     = judges.findIndex(j => j.id === score.judgeId);
+        const judge      = judges.find(j => j.id === score.judgeId);
         const contestant = contestants.find(c => c.id === score.contestantId);
         anomalies.push({
           judgeId:       score.judgeId,
-          judgeName:     judge >= 0 ? `Judge ${judge + 1}` : 'Unknown',
+          judgeName:     judge?.name ?? 'Unknown',
           contestantId:  score.contestantId,
           contestantName: contestant?.name ?? 'Unknown',
           categoryId:    cat.id,

@@ -82,18 +82,8 @@ export async function GET() {
         rank: index + 1
       }));
 
-    // Anonymize judges for privacy in public view
-    const anonymizedEvent = {
-      ...activeEvent,
-      judges: activeEvent.judges.map((judge, index) => ({
-        id: judge.id,
-        name: `Judge ${index + 1}`, // Anonymous labeling
-        role: judge.role,
-      })),
-    };
-
     return NextResponse.json({
-      event: anonymizedEvent,
+      event: activeEvent,
       rankings,
       totalScores: contestantScores,
     }, {

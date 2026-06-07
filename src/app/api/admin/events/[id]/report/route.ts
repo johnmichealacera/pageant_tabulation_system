@@ -148,14 +148,6 @@ export async function GET(
       ? Math.round((totalScoresSubmitted / totalPossibleSubmissions) * 100)
       : 0;
 
-    // Anonymize judges for privacy
-    const anonymousJudges = event.judges.map((judge, index) => ({
-      id: judge.id,
-      name: `Judge ${index + 1}`, // Anonymous labeling
-      role: judge.role,
-      // Remove user email for privacy
-    }));
-
     return NextResponse.json({
       event: {
         id: event.id,
@@ -165,7 +157,7 @@ export async function GET(
         isActive: event.isActive,
       },
       contestants: event.contestants,
-      judges: anonymousJudges,
+      judges: event.judges.map(j => ({ id: j.id, name: j.name, role: j.role, user: j.user ? { email: j.user.email } : undefined })),
       categories: event.categories,
       rankings,
       detailedScores,

@@ -30,7 +30,7 @@ export async function GET(
   const totalCategories  = event.categories.length;
   const scoresPerJudge   = totalContestants * totalCategories;
 
-  const judgeProgress = event.judges.map((judge, index) => {
+  const judgeProgress = event.judges.map((judge) => {
     const judgeScores   = event.scores.filter(s => s.judgeId === judge.id);
     // Count distinct contestants scored (at least 1 category)
     const contestantsDone = new Set(judgeScores.map(s => s.contestantId)).size;
@@ -39,7 +39,7 @@ export async function GET(
 
     return {
       judgeId: judge.id,
-      name: `Judge ${index + 1}`,
+      name: judge.name,
       role: judge.role,
       contestantsDone,
       totalContestants,

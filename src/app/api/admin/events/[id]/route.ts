@@ -41,17 +41,7 @@ export async function GET(
       return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    // Anonymize judges for privacy
-    const anonymizedEvent = {
-      ...event,
-      judges: event.judges.map((judge, index) => ({
-        ...judge,
-        name: `Judge ${index + 1}`, // Anonymous labeling
-        user: undefined, // Remove user data for privacy
-      })),
-    };
-
-    return NextResponse.json(anonymizedEvent);
+    return NextResponse.json(event);
   } catch (error) {
     console.error('Error fetching event:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

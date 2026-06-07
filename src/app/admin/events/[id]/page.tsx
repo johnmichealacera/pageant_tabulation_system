@@ -305,7 +305,7 @@ export default function EventManagement({ params }: { params: { id: string } }) 
                           <span className="text-sm font-bold text-violet-600 dark:text-violet-400">{i + 1}</span>
                         </div>
                         <div className="min-w-0">
-                          <h3 className="font-semibold text-[var(--text-primary)] text-sm">Judge {i + 1}</h3>
+                          <h3 className="font-semibold text-[var(--text-primary)] text-sm">{j.name}</h3>
                           <p className="text-xs text-[var(--text-muted)] truncate">{j.role}</p>
                         </div>
                       </div>
